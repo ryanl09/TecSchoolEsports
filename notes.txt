@@ -1,0 +1,21 @@
+1. themes/boxseat/inc/templatetags.php,  line 127 ->:
+
+		
+		<div class="header-inner">
+			<?php
+			foreach ( $sections as $section ) {
+				if ( 'widgets' == $section ) {
+					rookie_header_widgets();
+				} elseif ( 'banner' == $section && $options['header'] && 'image' == $options['style'] ) {
+					rookie_header_banner();
+				} elseif ( 'branding' == $section ) {
+					rookie_header_branding( $options );
+				} elseif ( 'menu' == $section ) {
+					//rookie_header_menu( $options );
+				} else {
+					do_action( 'rookie_header_area_section_' . $section, $options );
+				}
+			}
+			?>
+		</div><!-- .header-inner -->
+		
