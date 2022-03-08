@@ -120,9 +120,13 @@ function tecinit() {
 			wp_localize_script('dashboard', 'myAjax', array( 'ajaxurl' => admin_url($adm)));
 			wp_enqueue_script('dashboard');
 		} else if ($post_title==='settings') {
-			wp_register_script('settings', plugin_dir_url(__FILE__) . '/js/settings.js', array('jquery'));
+			wp_register_script('settings', plugin_dir_url(__FILE__) . 'js/settings.js', array('jquery'));
 			wp_localize_script('settings', 'myAjax', array('ajaxurl' => admin_url($adm)));
 			wp_enqueue_script('settings');
+		} else if ($post_title==='ryan test') {
+			wp_register_script('ryan', plugin_dir_url(__FILE__) . 'js/ryan.js', array('jquery'));
+			wp_localize_script('ryan', 'myAjax', array('ajaxurl' => admin_url($adm)));
+			wp_enqueue_script('ryan');
 		}
 
 		if (get_post_type()==='sp_player') {
@@ -137,10 +141,10 @@ function tecinit() {
 function get_schoolnames($title) {
 	$title = str_replace('–', '-', $title);
 	$title = str_replace('&#8211;', '-', $title);
-	$dash1 = strpos($title, '-');
+	$dash1 = strpos($title, '- ');
 	$team1 = substr($title, 0, $dash1);
 
-	$dash2 = strpos($title, '-', $dash1+1);
+	$dash2 = strpos($title, '- ', $dash1+1);
 	$vs = strpos($title, ' vs ');
 	$team2 = substr($title, $vs+4, $dash2-($vs+4));
 
@@ -154,7 +158,7 @@ function get_schoolnames($title) {
 function remove_game_from($title) {
 	$title = str_replace('–', '-', $title);
 	$title = str_replace('&#8211;', '-', $title);
-	$dash1 = strpos($title, '-');
+	$dash1 = strpos($title, '- ');
 	return substr($title, 0, $dash1-1);
 }
 
@@ -1422,28 +1426,31 @@ function tm_register() {
 
 	/* done */
 
-    $tec_user = sanitize_text_field($_POST['username']);
-    $tec_email = sanitize_email($_POST['pcemail']);
-    $tec_pass = sanitize_text_field($_POST['pass']);
-    $tec_cpass = sanitize_text_field($_POST['cpass']);
-	$school = sanitize_text_field($_POST['school']);
-	$teamname = sanitize_text_field($_POST['teamname']);
-	$mascot = sanitize_text_field($_POST['mascot']);
-	$pcperson = sanitize_text_field($_POST['pcperson']);
-	$pctitle = sanitize_text_field($_POST['pctitle']);
-	$pcphone = sanitize_text_field($_POST['pcphone']);
-	$pcdiscord = sanitize_text_field($_POST['pcdiscord']);
+    $tec_user = sanitize_text_field(trim($_POST['username']));
+    $tec_email = sanitize_email(trim($_POST['pcemail']));
+    $tec_pass = sanitize_text_field(trim($_POST['pass']));
+    $tec_cpass = sanitize_text_field(trim($_POST['cpass']));
+	$school = sanitize_text_field(trim($_POST['school']));
+	$teamname = sanitize_text_field(trim($_POST['teamname']));
+	$mascot = sanitize_text_field(trim($_POST['mascot']));
+	$pcperson = sanitize_text_field(trim($_POST['pcperson']));
+	$pctitle = sanitize_text_field(trim($_POST['pctitle']));
+	$pcphone = sanitize_text_field(trim($_POST['pcphone']));
+	$pcdiscord = sanitize_text_field(trim($_POST['pcdiscord']));
 	$team1games = $_POST['team1games'];
 	$team2games = $_POST['team2games'];
-	$primarycolor = sanitize_text_field($_POST['primarycolor']);
-	$secondarycolor = sanitize_text_field($_POST['secondarycolor']);
-	$socialmedia = sanitize_text_field($_POST['socialmedia']);
+	$primarycolor = sanitize_text_field(trim($_POST['primarycolor']));
+	$secondarycolor = sanitize_text_field(trim($_POST['secondarycolor']));
+	$socialmedia = sanitize_text_field(trim($_POST['socialmedia']));
 
     if($tec_pass!==$tec_cpass) { echo '[Error] Passwords do not match.'; die(); }
     if (!preg_match('/^[a-z0-9]{2,}[a-z0-9_]+$/i', $tec_user)) { echo '[Error] Username may only contain letters (a-z), numbers(0-9), and underscore (_)'; die(); }
     if (email_exists($tec_email)) { echo '[Error] An account with that email already exists.'; die(); }
     if (!preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/", $tec_email) ) { echo '[Error] Invalid email.'; die(); }
     if (username_exists($tec_user)) { echo '[Error] An account with that username already exists.'; die(); }
+
+	if (!($tec_user && $tec_email && $tec_pass && $tec_cpass && $school && $school && $mascot && $pcperson && $pctitle && $pcphone && $pcdiscord && $primarycolor 
+	&& $secondarycolor&& $socialmedia)) { echo '[Error] Fields are missing!'; die(); }
 
 	$args = array(
 		'user_login' => $tec_user,
@@ -1626,15 +1633,18 @@ function student_register() {
 
 	/* done */
 
-    $tec_user = sanitize_text_field($_POST['username']);
-    $tec_email = sanitize_email($_POST['email']);
-    $tec_pass = sanitize_text_field($_POST['pass']);
-    $tec_cpass = sanitize_text_field($_POST['cpass']);
-	$name = sanitize_text_field($_POST['name']);
-	$ign = sanitize_text_field($_POST['ign']);
+    $tec_user = sanitize_text_field(trim($_POST['username']));
+    $tec_email = sanitize_email(trim($_POST['email']));
+    $tec_pass = sanitize_text_field(trim($_POST['pass']));
+    $tec_cpass = sanitize_text_field(trim($_POST['cpass']));
+	$name = sanitize_text_field(trim($_POST['name']));
+	$ign = sanitize_text_field(trim($_POST['ign']));
 	$games = $_POST['games'];
-	$pronouns = sanitize_text_field($_POST['pronouns']);
-	$grade = $_POST['grade'];
+	$pronouns = sanitize_text_field(trim($_POST['pronouns']));
+	$grade = trim($_POST['grade']);
+
+	if (!($tec_user && $tec_email && $tec_pass && $tec_cpass && $name && $ign && $pronouns)) { echo '[Error] Fields are missing!'; die(); }
+
 	if(!intval($grade)) {
 		$grade='';
 	}
@@ -1700,7 +1710,7 @@ function student_register() {
 			} else {
 				if (is_student_in_db($pageid)) {
 					$codeadd = bin2hex(random_bytes(3));
-					$pageid = create_student($name . '-' . $codeadd, $user->ID);
+					$pageid = create_student($name . '#' . $codeadd, $user->ID);
 				}
 			}
 
@@ -1711,10 +1721,12 @@ function student_register() {
 				'ign' => $ign,
 				'username' => $tec_user,
 				'grade' => $grade,
-				'pronouns' => $pronouns
+				'pronouns' => $pronouns,
+				'codeentered' => $schoolcode
 			));
 
 			update_user_meta($user->ID, 'pageid', $pageid);
+			update_user_meta($user->ID, 'ign', $ign);
 			add_student_data($pageid, $games, $school);
 			echo '[Success] Account created successfully. You are now signed in.';
 		} else {
@@ -1736,6 +1748,12 @@ function is_student_in_db($id) {
 }
 
 function create_student($name, $sid) {
+	$id = createstudent($name);
+	update_post_meta($id, 'owner', $sid);
+	return $id;
+}
+
+function createstudent($name) {
 	$student_args = array(
 		'post_status' => 'publish',
 		'post_title' => ucwords($name),
@@ -1743,9 +1761,7 @@ function create_student($name, $sid) {
 		'post_content' => '',
 		'post_type' => 'sp_player'
 	);
-	$id = wp_insert_post($student_args);
-	update_post_meta($id, 'owner', $sid);
-	return $id;
+	return wp_insert_post($student_args);
 }
 
 function add_student_data($id, $games, $school) {
@@ -1795,5 +1811,76 @@ function find_schoolcode($uid) {
 	}
 	return 0;
 }
+
+function ryan_add_player() {
+	if (strpos($_SERVER['HTTP_REFERER'], 'https://tecschoolesports.com')===false) { die();}
+
+	//only ryan can create students this way
+	$user = wp_get_current_user();
+	if (!$user->ID || $user->user_login !== 'ryanl09') { echo '[Error] Invalid permissions.'; die(); }
+
+	//make sure values are set
+	if (!(isset($_POST['studentname']) && isset($_POST['studentign']) && isset($_POST['gamesel']) && isset($_POST['dsel']) && isset($_POST['schoolsel']))) { 
+		echo '[Error] Fields are missing!'; die();
+	}
+
+	$exists=true;
+
+	$name = ucwords(trim($_POST['studentname']));
+	$ign = trim($_POST['studentign']);
+	$game = trim($_POST['gamesel']);
+	$div = trim($_POST['dsel']);
+	$games = [$game . ' ' . $div];
+	$school = trim($_POST['schoolsel']);
+
+	$id = post_exists($name, '', '', 'sp_player');
+
+	if (!$id) { //student does not exist
+		$id = createstudent($name);
+		$exists=false;
+	}
+	//add team to student
+	add_student_data($id,$games,post_exists($school));
+
+	//add post meta
+	update_post_meta($id, 'ign', $ign);
+
+
+
+	echo '[Success] Player ' . $exists ? 'existed' : 'created' . '. ID: ' . $id;
+
+	die();
+}
+
+add_action('wp_ajax_ryan_add_player', 'ryan_add_player');
+add_action('wp_ajax_nopriv_ryan_add_player', 'ryan_add_player');
+
+function update_player_ign() {
+
+	if (strpos($_SERVER['HTTP_REFERER'], 'https://tecschoolesports.com')===false) { die();}
+
+	//only ryan can create students this way
+	$user = wp_get_current_user();
+	if (!$user->ID || $user->user_login !== 'ryanl09') { echo '[Error] Invalid permissions.'; die(); }
+
+	//make sure values are set
+	if (!(isset($_POST['studentname']) && isset($_POST['studentign']))) { 
+		echo '[Error] Fields are missing!'; die();
+	}	
+
+	$id = post_exists($name, '', '', 'sp_player');
+
+	if ($id) {
+		update_post_meta($id, 'ign', $ign);
+		echo '[Success] IGN updated.';
+		die();
+	}
+
+	echo '[Error] Player not found.';
+	die();
+}
+
+add_action('wp_ajax_update_player_ign', 'update_player_ign');
+add_action('wp_ajax_nopriv_update_player_ign', 'update_player_ign');
 
 ?>
