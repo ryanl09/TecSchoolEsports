@@ -9,7 +9,7 @@
 
 $user = wp_get_current_user();
 
-if ($user->user_login==='ryanl09') {
+if ($user->user_login==='ryanl09' || $user->user_login==='tecunknown' || $user->user_login==='tecbryan') {
     get_header();
 } else {
     wp_redirect('https://tecschoolesports.com');
@@ -39,6 +39,7 @@ if ($user->user_login==='ryanl09') {
                     <option value="Moshannon Valley">Moshannon Valley</option>
                     <option value="Salisbury-Elk Lick">Salisbury-Elk Lick</option>
                     <option value="Holidaysburg">Holidaysburg</option>
+                    <option value="Holidaysburg">Bishop Carroll</option>
                     <?php 
                         global $wpdb;
                         $res = $wpdb->get_results("SELECT * FROM hs_staff;", ARRAY_A);

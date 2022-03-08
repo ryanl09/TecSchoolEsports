@@ -16,7 +16,24 @@ get_header();
         <br>
         
         <div class="schoolscompetingwrapper">
-            
+
+            <div class="schoolbox" id="holidaysburg-box" onmouseover="imghover('i-holidaysburg');" onmouseleave="imgleave('i-holidaysburg');" onclick="imgclick('holidaysburg');">
+                <div class="schoolbox-image holidaysburg">
+                    <img src="" alt="holidaysburg" id="i-holidaysburg" class="schoolbox-image-img">
+                </div>
+            </div>
+
+            <div class="schoolbox" id="moshannonvalley-box" onmouseover="imghover('i-moshannonvalley');" onmouseleave="imgleave('i-moshannonvalley');" onclick="imgclick('moshannonvalley');">
+                <div class="schoolbox-image moshannonvalley">
+                    <img src="" alt="moshannonvalley" id="i-moshannonvalley" class="schoolbox-image-img">
+                </div>
+            </div>
+
+            <div class="schoolbox" id="moshannonvalley-box" onmouseover="imghover('i-moshannonvalley');" onmouseleave="imgleave('i-moshannonvalley');" onclick="imgclick('moshannonvalley');">
+                <div class="schoolbox-image moshannonvalley">
+                    <img src="" alt="moshannonvalley" id="i-moshannonvalley" class="schoolbox-image-img">
+                </div>
+            </div>
         </div>
         
         <?php 

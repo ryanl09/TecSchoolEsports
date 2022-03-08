@@ -127,6 +127,9 @@ function tecinit() {
 			wp_register_script('ryan', plugin_dir_url(__FILE__) . 'js/ryan.js', array('jquery'));
 			wp_localize_script('ryan', 'myAjax', array('ajaxurl' => admin_url($adm)));
 			wp_enqueue_script('ryan');
+		} else if($post_title==='team rosters') {
+			wp_register_script('teamrosters', plugin_dir_url(__FILE__) . 'js/teamrosters.js', array('jquery'));
+			wp_enqueue_script('teamrosters');
 		}
 
 		if (get_post_type()==='sp_player') {

@@ -1,0 +1,15 @@
+.teamrosterheader {
+
+}
+
+.teamrosterheader:hover {
+    cursor:pointer;
+}
+
+.teamrosterheader:hover > h2{
+    transition: all .4s ease;
+}
+
+.teamrosterheader:hover > h2 {
+    opacity:.4;
+}
