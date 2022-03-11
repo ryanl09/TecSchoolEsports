@@ -15,41 +15,79 @@ get_header();
         <h1 class="entry-title">Teams</h1>
         <br>
         
-        <div class="schoolscompetingwrapper">
+        <div id="schoolscompetingwrapper">
 
-            <div class="schoolbox" id="holidaysburg-box" onmouseover="imghover('i-holidaysburg');" onmouseleave="imgleave('i-holidaysburg');" onclick="imgclick('holidaysburg');">
-                <div class="schoolbox-image holidaysburg">
-                    <img src="" alt="holidaysburg" id="i-holidaysburg" class="schoolbox-image-img">
-                </div>
+        <?php
+
+        /*<div id="schoolscompetingwrapper">
+
+            <div class="schoolbox" id="bishopcarroll-box" onmouseover="imghover('i-bishopcarroll');" onmouseleave="imgleave('i-bishopcarroll');" onclick="imgclick('bishopcarroll');">
+            <div class="schoolbox-image bishopcarroll">
+            <img id="i-bishopcarroll" class="schoolbox-image-img" src="https://tecschoolesports.com/wp-content/uploads/2022/01/Bishop-Carrol-Huskies-3.png">
+            </div>
+            <div class="schoolbox-title"><p>Bishop Carroll</p></div>
             </div>
 
-            <div class="schoolbox" id="moshannonvalley-box" onmouseover="imghover('i-moshannonvalley');" onmouseleave="imgleave('i-moshannonvalley');" onclick="imgclick('moshannonvalley');">
-                <div class="schoolbox-image moshannonvalley">
-                    <img src="" alt="moshannonvalley" id="i-moshannonvalley" class="schoolbox-image-img">
-                </div>
+            <div class="schoolbox" id="foresthills-box" onmouseover="imghover('i-foresthills');" onmouseleave="imgleave('i-foresthills');" onclick="imgclick('foresthills');">
+            <div class="schoolbox-image foresthills">
+            <img id="i-foresthills" class="schoolbox-image-img" src="https://tecschoolesports.com/wp-content/uploads/2022/01/forest-hills-rangers-circle.png">
+            </div>
+            <div class="schoolbox-title"><p>Forest Hills</p></div>
             </div>
 
-            <div class="schoolbox" id="moshannonvalley-box" onmouseover="imghover('i-moshannonvalley');" onmouseleave="imgleave('i-moshannonvalley');" onclick="imgclick('moshannonvalley');">
-                <div class="schoolbox-image moshannonvalley">
-                    <img src="" alt="moshannonvalley" id="i-moshannonvalley" class="schoolbox-image-img">
-                </div>
+            <div class="schoolbox" id="greaterjohnstown-box" onmouseover="imghover('i-greaterjohnstown');" onmouseleave="imgleave('i-greaterjohnstown');" onclick="imgclick('greaterjohnstown');">
+            <div class="schoolbox-image greaterjohnstown">
+            <img id="i-greaterjohnstown" class="schoolbox-image-img" src="https://tecschoolesports.com/wp-content/uploads/2022/01/greater-johnstown-iso.png">
             </div>
-        </div>
-        
-        <?php 
-            global $wpdb;
-            $res = $wpdb->get_results("SELECT * FROM hs_staff;", ARRAY_A);
-            if ($wpdb->num_rows > 0) {
-                for ($i = 0; $i < count($res); $i++) {
-                    $school=$res[$i]['school'];
-                    $lower = strtolower(str_replace(' ', '', $school));
-                    if ($school==='ryan') {
-                        continue;
+            <div class="schoolbox-title"><p>Greater Johnstown</p></div>
+            </div>
+
+            </div> */
+
+
+
+            $season = get_season(season_num());
+            $args = array(
+                'post_type' => 'sp_team',
+                'post_status' => 'publish',
+                'posts_per_page' => -1,
+                'orderby' => 'title',
+                'order' => 'ASC',
+                'tax_query' => array(
+                    'taxonomy' => 'sp_league',
+                    'field' => 'term_id',
+                    'terms' => $season
+                )
+            );
+            $posts=get_posts($args);
+            for ($i = 0; $i < count($posts); $i++) {
+                $title = $posts[$i]->post_title;
+                if (strpos($title, ' - ') || strpos($title, ' – ') || strpos($title, ' &#8211; ')) {
+                    continue;
+                }
+                $id = $posts[$i]->ID;
+                $tax = get_the_terms($id, 'sp_season');
+                $flag = false;
+                for ($j = 0; $j < count($tax); $j++) {
+                    if ($tax[$j]->term_id===$season) {
+                        //echo '<script>console.log(`'.$tax[$j]->term_id.', s: ' . $season . '`);</script>';
+                        $flag=true;
+                        break;
                     }
-                    
+                }
+                if ($flag) {
+                    $slug = $posts[$i]->post_name;
+                    echo '<div class="schoolbox" id="' . $slug . '-box" onmouseover="imghover(`i-' . $slug . '`);" onmouseleave="imgleave(`i-' . $slug . '`);" onclick="imgclick(`' . $slug . '`);">
+                                <div class="schoolbox-image ' . $slug . '">
+                                    <img src="' . get_the_post_thumbnail_url($id) . '" alt="' . $slug . '" id="i-' . $slug . '" class="schoolbox-image-img">
+                                </div>
+                                <div class="schoolbox-title"><p>' . $title . '</p></div>
+                            </div>';
                 }
             }
         ?>
+
+        </div>
     </main>
 </div>
 

@@ -48,7 +48,7 @@ if (in_array('administrator', $roles)) {
             */
                 sort($teams);
 
-                $tables=[''];
+                $tables=[];
                 $MASTER = array();
                 $args = array(
                     'post_type' => 'sp_player',
@@ -70,10 +70,12 @@ if (in_array('administrator', $roles)) {
                     } //if ign isnt in meta, get it from database
 
                     for ($j = 0; $j < count($meta); $j++) { //foreach team the player is on
-                        if ($j < 0) {
+                        if ($meta[$j] < 1) {
                             continue;
                         }
                         $title = get_the_title($meta[$j]);
+                        $title = str_replace('–', '-', $title);
+                        $title = str_replace('&#8211;', '-', $title);
                         $MASTER[$title][count($MASTER[$title])] = array(
                             'name' => $name,
                             'ign' => $ign
@@ -90,15 +92,20 @@ if (in_array('administrator', $roles)) {
 
                     for ($j = 0; $j < count($c); $j++) { //foreach subteam page
                         $t = get_the_title($c[$j]);
+                        $t = str_replace('–', '-', $t);
+                        $t = str_replace('&#8211;', '-', $t);
                         $stradd = '';
                         for ($k= 0; $k < count($MASTER[$t]); $k++) {
+                            //echo '<script>console.log("name: ' . $t . ', id: ' . $MASTER[$t][$k][] . '");</script>';
                             $stradd .= '
                             <tr>
-                                <td>' . $MASTER[$t][$k][0] . '</td>
-                                <td>' . $MASTER[$t][$k][1] . '</td>
+                                <td>' . $MASTER[$t][$k]['name'] . '</td>
+                                <td>' . $MASTER[$t][$k]['ign'] . '</td>
                             </tr>';
                         }
-                        $tables[str_replace(' ', '', strtolower($teams[$j]))] .= '<h4>' . $t . '</h4>
+                        
+                        
+                        $tables[$teams[$i]] .= '<h4>' . $t . '</h4>
                             <table>
                                 <thead>
                                     <tr>
@@ -116,14 +123,15 @@ if (in_array('administrator', $roles)) {
                     echo '<div id="team-' . $lower . '" class="teamrosterheader" onclick="slide(`' . $lower . '`);">
                             <h3 id="' . $lower . '-header">+ ' . $teams[$i] . '</h3>
                             <div id="team-' . $lower . '-content" style="display:none;">
-                                ' . $tables[$lower] . '
+                                ' . $tables[$teams[$i]] . '
                             </div>
                         </div>';
                 }
 
-                echo '<pre>';
-                print_r($MASTER);
-                echo '</pre>';
+                /*echo '<pre>';
+                $keys = array_keys($tables);
+                print_r($keys);
+                echo '</pre>';*/
         ?>
     </main>
 </div>

@@ -81,6 +81,7 @@ let object = (oname) => {
 }
 
 function sort_stuff(sortby) {
+    update_sort(sortby);
     if (lastsort===sortby) {
         nfo = nfo.reverse();
         make_table();
@@ -97,8 +98,8 @@ function sort_stuff(sortby) {
         }
     }
     lastsort = sortby;
-    update_sort(sortby);
     make_table();
+    update_sort(sortby);
 }
 
 function cap(word) {
@@ -149,7 +150,7 @@ function make_table() {
                 current += td(format_team(data[key][info]));
                 //current += td(data[key][info]);
             } else {
-                current += td(data[key][info]);
+                current += td(data[key][info] ?? 0);
             }
             //user: key
             //value: data[key][info];

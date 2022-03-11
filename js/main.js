@@ -246,3 +246,7 @@ function imgleave(img) {
 function imgclick(ext) {
     window.location='https://tecschoolesports.com/team/' + ext;
 }
+
+function stdclick(ext) {
+    window.location='https://tecschoolesports.com/table/' + ext;
+}

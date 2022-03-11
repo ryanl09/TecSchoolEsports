@@ -26,6 +26,8 @@ $(document).ready(function() {
                 ${events[0].img[1]}
                 <p class="mphp">${events[0].teams[1]}</p>
             </div>
+
+            
         </div>
     
     </div>`;
