@@ -95,7 +95,8 @@ $(document).ready(function(){
 
     /*COMBINE EVERYTHING*/
     var items = listwrap('menu-list', 'menulist', league+art+more+store+prof);
-    var left = span('menu-logo-box', img('menu-logo', "https://tecschoolesports.com/wp-content/uploads/2022/01/tectr2.png", 64, 32), 'left');
+    //<img src="https://i0.wp.com/tecschoolesports.com/wp-content/uploads/2021/10/Forest-Hills-Esports-Logo-2022-1.png" width="64" class="menu-logo">
+    var left = span('menu-logo-box', menulogo(img('img-menu-logo', "https://tecschoolesports.com/wp-content/uploads/2022/01/tectr2.png", 64, 32)), 'left');
     var n = nav('tec-nav', items);
     var right = span('menu-main', n + mobileicon+mobmenu, 'right');
 
@@ -149,8 +150,12 @@ let wrapper=(id, content)=>{
     return '<div id="' + id + '">'+content+'</div>';
 }
 
+let menulogo=(text)=>{
+    return `<div class="menu-logo">${text}</div>`;
+}
+
 let img=(id, src,w,h)=>{
-    return '<img id="'+id+'" src="' + src + '" width="' + w +'" height="' + h + '">';
+    return '<img class="'+id+'" src="' + src + '" width="' + w +'" height="' + h + '">';
 }
 
 let nav=(id,text)=>{

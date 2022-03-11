@@ -10,6 +10,10 @@
 
 add_action('init', 'tecschoolesports');
 
+/**
+ * Starting function for the plugin. Displays the menu on every page and determines the role of the user for js
+ */
+
 function tecschoolesports() {
 	wp_register_script('main', plugin_dir_url(__FILE__) . 'js/main.js');
 	$roles = wp_get_current_user()->roles;
@@ -28,6 +32,10 @@ function tecschoolesports() {
 }
 
 add_action('wp_enqueue_scripts', 'tecinit');
+
+/**
+ * Main conditional function for the plugin. Determines what page the user is on to call a specific script
+ */
 
 function tecinit() {
     $adm = 'admin-ajax.php';
@@ -141,6 +149,13 @@ function tecinit() {
 }
 
 //get schoolnames from title string ( i.e. 'A - RL D1 vs B - RL D1' => [0]='A', [1]='B' )
+
+/**
+ * Takes a game event string and strips game titles
+ * @param	string	$title	The title of the school
+ * @return	array
+ */
+
 function get_schoolnames($title) {
 	$title = str_replace('–', '-', $title);
 	$title = str_replace('&#8211;', '-', $title);
@@ -157,7 +172,12 @@ function get_schoolnames($title) {
 	return [$title, $team2];
 }
 
-//remove game from name ( i.e. 'A - RL D1' => 'A' )
+/**
+ * Strips the game from a school subteam string
+ * @param	string	$title	The title string to remove the game from
+ * @return	string
+ */
+
 function remove_game_from($title) {
 	$title = str_replace('–', '-', $title);
 	$title = str_replace('&#8211;', '-', $title);
@@ -166,6 +186,12 @@ function remove_game_from($title) {
 }
 
 //get events for homepage blocks
+
+/**
+ * Gets all past and upcoming events and formats them for use on the homepage
+ * @return	array
+ */
+
 function get_homepage_events() {
 	$arr = [];
 	$args = array(
@@ -203,9 +229,11 @@ function get_homepage_events() {
 	return $arr;
 }
 
-/*
-	function to check for new messages
-*/
+/**
+ * Checks the database to see if the logged in user has any new messages
+ * @param	int	$op	The operation use. 0 = return row count, 1+ = return the row
+ * @return	ARRAY_A
+ */
 
 function refresh_messages($op) {
 	global $wpdb;
@@ -224,9 +252,10 @@ function refresh_messages($op) {
 	}
 }
 
-/*
-	function to get messages
-*/
+/**
+ * Gets all messages for the logged in user
+ * @return	ARRAY_A
+ */
 
 function get_messages() {
 	$to = wp_get_current_user()->ID;
@@ -239,18 +268,22 @@ function get_messages() {
 	return false;
 }
 
-/*
-	function to send a message to user from system
-*/
+/**
+ * Sends a message to a user from the system
+ * @param	string	$to		The user id to send the message to
+ * @param	string	$msg	The message to send
+ */
 
 function system_message($to, $msg) {
 	_send_message($to, '208183339', $msg);
 }
 
-/*
-	send message without echoing anything
-*/
-
+/**
+ * Sends a message to a user from any user
+ * @param	string	$to		The user id to send the message to
+ * @param	string	$from	The user id to send the message from
+ * @param	string	$msg	The message to send
+ */
 
 function _send_message($to, $from, $msg) {
 	global $wpdb;
@@ -263,9 +296,9 @@ function _send_message($to, $from, $msg) {
 		'seen' => 0));
 }
 
-/*
-	send a message
-*/
+/**
+ * AJAX function to send a message from a logged in user
+ */
 
 function send_message() {
 	if (strpos($_SERVER['HTTP_REFERER'], 'https://tecschoolesports.com')===false) { die();}
@@ -289,18 +322,19 @@ function send_message() {
 add_action('wp_ajax_send_message', 'send_message');
 add_action('wp_ajax_nopriv_send_message', 'send_message');
 
-/*
-	delete msg no echo
-*/
+/**
+ * Deletes a message given it's id
+ * @param	int	$id		The id of the message to delete
+ */
 
 function _delete_message($id) {
 	global $wpdb;
 	$wpdb->query($wpdb->prepare("DELETE FROM messages WHERE identifier = '" . $id . "'"));
 }
 
-/*
-	function to delete message
-*/
+/**
+ * AJAX function to delete a message of a logged in user
+ */
 
 function delete_message() {
 	if (strpos($_SERVER['HTTP_REFERER'], 'https://tecschoolesports.com')===false) { die();}
@@ -317,6 +351,11 @@ function delete_message() {
 
 add_action('wp_ajax_delete_message', 'delete_message');
 add_action('wp_ajax_nopriv_delete_message', 'delete_message');
+
+/**
+ * Gets the basic stat columns for all games
+ * @return	array
+ */
 
 function getcols() {
 	return array(
@@ -335,6 +374,10 @@ function getcols() {
 	);
 }
 
+/**
+ * Attaches to the admin script enqueue hook. Used for adding scripts to /wp-admin pages
+ */
+
 function my_admin_enqueue($hook_suffix) {
 	$type=get_post_type();
 	if($type==='sp_event') {
@@ -347,7 +390,11 @@ function my_admin_enqueue($hook_suffix) {
 
 add_action('admin_enqueue_scripts', 'my_admin_enqueue');
 
-/*for tm dashboard or anything else */
+/**
+ * Gets all players currently on a given team
+ * @param	int	$teamid		The team id to get players from
+ * @return	array
+ */
 
 function get_players($teamid) {
 	$players = [];
@@ -376,9 +423,12 @@ function get_players($teamid) {
 	return $players;
 }
 
+/**
+ * AJAX function to get the schedule for the current season
+ */
+
 function getschedule() {
 	if (strpos($_SERVER['HTTP_REFERER'], 'https://tecschoolesports.com')===false) { die();}
-
 	$S = 1359;
 
 	if (isset($_POST['game']))
@@ -441,6 +491,12 @@ function getschedule() {
 add_action('wp_ajax_getschedule', 'getschedule');
 add_action('wp_ajax_nopriv_getschedule', 'getschedule');
 
+/**
+ * Converts slugs to proper game titles
+ * @param	string	$info	The string to convert
+ * @param	string	$t		The type of conversion. 'g' = game, 't' = team
+ */
+
 function conv($info, $t) {
 	$ret = $info;
 	if($t==='g') {
@@ -460,6 +516,14 @@ function conv($info, $t) {
 	}
 	return $ret;
 }
+
+/**
+ * Gets stat information from a given array and strip useless values
+ * @param	string	$g	The game to get stat columns from
+ * @param	array	$a	The array with the values
+ * @param	string	$s	The name for the array's name key
+ * @return	ARRAY_A
+ */
 
 function stat_i($g, $a, $s) {
 	$arr = array();
@@ -495,10 +559,19 @@ function stat_i($g, $a, $s) {
 	return $arr;
 }
 
+/**
+ * Returns an array of all stat columns
+ * @return array
+ */
+
 function allcols() {
 	return ['score', 'goals', 'assists', 'shots', 'saves', 'deaths', 'damage', 'healsdealt', 'finalblows', 'herodamage', 'avgcombatscore', 'econrating', 'firstbloods', 
 	'plants', 'defuses', 'kills'];
 }
+
+/**
+ * AJAX function to get the stats of all players for a certain game
+ */
 
 function getstats() {
 	if (strpos($_SERVER['HTTP_REFERER'], 'https://tecschoolesports.com')===false) { die();}
@@ -558,6 +631,10 @@ function getstats() {
 add_action('wp_ajax_getstats', 'getstats');
 add_action('wp_ajax_nopriv_getstats', 'getstats');
 
+/**
+ * AJAX function to get the sportspress stat tables of a certain player
+ */
+
 function getstatsu() {
 	if (strpos($_SERVER['HTTP_REFERER'], 'https://tecschoolesports.com')===false) { die();}
 		
@@ -604,6 +681,12 @@ function getstatsu() {
 add_action('wp_ajax_getstatsu', 'getstatsu');
 add_action('wp_ajax_nopriv_getstatsu', 'getstatsu');
 
+/**
+ * Gets the sportspress league page id for a certain game
+ * @param	string	$g	The game to get the id for
+ * @return	int
+ */
+
 function get_league_id($g) {
 	$g = strtolower($g);
 	if (strpos($g, 'rocket league d1') !== false) {
@@ -624,6 +707,11 @@ function get_league_id($g) {
 		return 1372;
 	}
 }
+
+/**
+ * Returns an array of information for the casters page
+ * @return ARRAY_A
+ */
 
 function caster_info() {
 
@@ -709,6 +797,13 @@ function caster_info() {
 	return $str;
 }
 
+/**
+ * Returns the second index of a number n in an array
+ * @param	array	$arr	The array to search
+ * @param	int		$n		The number to search for in the array
+ * @return	int
+ */
+
 function get_index($arr, $n) { //get second index of 'n'
 	$c=0;
 	$in=-1;
@@ -724,43 +819,33 @@ function get_index($arr, $n) { //get second index of 'n'
 	return $in;
 }
 
+/**
+ * Displays a string in the default javascript alert
+ * @param	string	$d	The message to show
+ */
+
 function alert($d) {
 	echo '<script>alert(' . $d . ')</script>';
 }
+
+/**
+ * Displays a JSON object in the default javascript alert
+ * @param	string	$d	The JSON object to show
+ */
 
 function alerta($d) {
 	echo '<script>alert(JSON.stringify(' . $d . '))</script>';
 }
 
-/*image to text for games */
-
-function get_game_img($game) {
-	$ret = '';
-	$game=strtolower($game);
-
-	if(strpos($game, 'rocket league d1')!==false) {
-		$ret='https://tecschoolesports.com/wp-content/uploads/2021/10/rld1-e1642548429276.png';
-	} else if(strpos($game, 'rocket league d2')!==false) {
-		$ret='https://tecschoolesports.com/wp-content/uploads/2021/10/rld2-e1642548409291.png';
-	} else if(strpos($game, 'overwatch')!==false) {
-		$ret='https://tecschoolesports.com/wp-content/uploads/2021/10/tec-ov-e1642548358670.png';
-	} else if(strpos($game, 'valorant')!==false && strpos($game, '(green)')===false && strpos($game, '(yellow)')===false) {
-		$ret='https://tecschoolesports.com/wp-content/uploads/2021/10/tec-va-1-e1642548387767.png';
-	} else if(strpos($game, 'valorant (green)')!==false) {
-		$ret='https://tecschoolesports.com/wp-content/uploads/2021/10/vagreen-e1642548468424.png';
-	} else if(strpos($game, 'valorant (yellow)')!==false) {
-		$ret='https://tecschoolesports.com/wp-content/uploads/2021/10/vayel-e1642548451259.png';
-	} else if(strpos($game, 'knockout city')!==false) {
-		$ret='https://tecschoolesports.com/wp-content/uploads/2021/12/koc.png';
-	}
-
-	return $ret;
-}
+/**
+ * Finds the game from a sub team title string
+ * @param	string	$game	The title to find the game from
+ * @return	string
+ */
 
 function team_to_game($game) {
 	$ret = '';
 	$game=strtolower($game);
-
 	if(strpos($game, 'rocket league d1')!==false) {
 		$ret='Rocket League D1';
 	} else if(strpos($game, 'rocket league d2')!==false) {
@@ -786,7 +871,11 @@ function team_to_game($game) {
 	return $ret;
 }
 
-/* get info for my games tab */
+/**
+ * Gets the array of past & upcoming matches for the 'My Games' page
+ * @param	WP_User	$user	The user to get the info for
+ * @return	ARRAY_A
+ */
 
 function my_games_info($user) {
 	$arr = array();
@@ -807,13 +896,21 @@ function my_games_info($user) {
 	return $arr;
 }
 
-/*get user player page id */
+/**
+ * Return the sportspress player page id for a given user
+ * @param	string	$id		The id to get the page from
+ */
 
 function pageid($id) {
 	return get_user_meta($id, 'pageid', true);
 }
 
-/*get a team's upcoming events*/
+/**
+ * Gets the events for a certain team
+ * @param	string	$team	The team string to get the games for
+ * @param	int	$teamid		The id of the team to get the games for
+ * @return	ARRAY_A
+ */
 
 function get_events($team, $teamid) {
 	$S = 1359;
@@ -858,10 +955,13 @@ function get_events($team, $teamid) {
 		}
 		wp_reset_postdata();
 	}
-
 	return $array;
 }
 
+/**
+ * Gets the subteams for a team manager, and prints the buttons to the screen
+ * @param	WP_User	$user	The user to get the games for
+ */
 
 function get_tm_subteams($user) {
 	
@@ -892,16 +992,24 @@ function get_tm_subteams($user) {
 		}
 	}
 	wp_reset_postdata();
-
-
 }
 
-//get season for an event
+/**
+ * Returns the season of a game
+ * @param	int	$eventid	The id of the event
+ * @return	int
+ */
+
 function event_season($eventid) {
 	return get_the_terms($eventid, 'sp_season')[0]->term_id;
 }
 
-//get most recent season for an object
+/**
+ * Returns the most recent season for an wordpress post
+ * @param	int	$id		The id of the post
+ * @return	int
+ */
+
 function r_seas($id) {
 	$seasons = get_the_terms($id, 'sp_season');
 	$mseas = $seasons[0]->term_id;
@@ -913,7 +1021,13 @@ function r_seas($id) {
 	return $mseas;
 }
 
-//get all events for team manager dashboard
+/**
+ * Gets all events for the team manager dashboard page
+ * @param	string	$team	The team manager's team title
+ * @param	int		$tid	The id of the manager's team
+ * @return	ARRAY_A
+ */
+
 function get_dash_events($team, $tid) {
 	$S = get_season(season_num());
 	$S=1359;
@@ -963,9 +1077,12 @@ function get_dash_events($team, $tid) {
 		}
 		wp_reset_postdata();
 	}
-
 	return $array;
 }
+
+/**
+ * AJAX function to allow a user to update profile fields
+ */
 
 function update_profile() {
 	
@@ -992,6 +1109,13 @@ function update_profile() {
 add_action('wp_ajax_update_profile', 'update_profile');
 add_action('wp_ajax_nopriv_update_profile', 'update_profile');
 
+/**
+ * Returns the opponent from a title
+ * @param	string	$title	The title to use
+ * @param	string	$home	The home team to strip
+ * @return	string
+ */
+
 function isolate_opponent($title, $home) {
 	$title = str_replace(' vs ', '', $title);
 	$title = str_replace($home, '', $title);
@@ -999,7 +1123,10 @@ function isolate_opponent($title, $home) {
 	return $title;
 }
 
-/* team manager confirm */
+/**
+ * AJAX function for the team manager to submit their roster for an event
+ */
+
 function confirm_roster() {
 	
 	if (strpos($_SERVER['HTTP_REFERER'], 'https://tecschoolesports.com')===false) { die();}
@@ -1076,6 +1203,12 @@ function confirm_roster() {
 add_action('wp_ajax_confirm_roster', 'confirm_roster');
 add_action('wp_ajax_nopriv_confirm_roster', 'confirm_roster');
 
+/**
+ * Gets all game titles a team competes in for the team manager's dashboard
+ * @param	boolean	$stronly	Determines whether HTML buttons or a array of events will be returned
+ * @return	ARRAY_A
+ */
+
 function dashboard_teams($stronly) {
 	$myteam = get_user_meta(wp_get_current_user()->ID, 'teamid', true);
 	$team = get_the_title($myteam);
@@ -1108,7 +1241,13 @@ function dashboard_teams($stronly) {
 	return $buttons;
 }
 
-//get the roster for a given event for a certain team
+/**
+ * Returns the roster of a certain event for a given team
+ * @param	int	$teamid		The id of the team to get the roster for
+ * @param	int	$eventid	The id of the event to get the roster from
+ * @return	array
+ */
+
 function get_event_roster($teamid, $eventid) {
 	if (strpos($_SERVER['HTTP_REFERER'], 'https://tecschoolesports.com')===false) { die();}
 		
@@ -1136,35 +1275,21 @@ function get_event_roster($teamid, $eventid) {
 	return $ret;
 }
 
-/*tm register get team page id for post meta*/
+/**
+ * Gets the team id of a team string
+ * @param	string	$name	The name of the name
+ * @return	int
+ */
+
 function getteamid($name) {
-
-	/*
-	$pageid = -1;
-	$query = new WP_Query(array ( 
-		'post_type' => 'sp_team',
-		'posts_per_page' => '-1',
-		'name' => ucwords($name),
-		'post_status' => 'future,publish'
-			));
-
-	if ($query->have_posts()) {
-		$i = 0;
-		while ($query->have_posts()) {
-			$query->the_post();
-			$title = $query->posts[$i]->post_title;
-			if ($title===$name) {
-				$pageid = $query->posts[$i]->ID;
-			}
-			$i++;
-		}
-	}
-	wp_reset_postdata();*/
-
 	return post_exists(trim(ucwords($name)));
 }
 
-//generate school code when team register
+/**
+ * Generates a random 20 character string for a new school
+ * @return	string
+ */
+
 function gen_schoolcode() {
 	$code = bin2hex(random_bytes(10));
 	while (sc_exists($code)) {
@@ -1173,7 +1298,11 @@ function gen_schoolcode() {
 	return $code;
 }
 
-/*see if school code exists alr */
+/**
+ * Determines whether a school code has already been generated or not
+ * @param	string	$code	The code to search for
+ * @return	boolean
+ */
 
 function sc_exists($code) {
 	global $wpdb;
@@ -1186,15 +1315,12 @@ function sc_exists($code) {
 	return $rows>0;
 }
 
-//get all active teams for /teams page
-function game_boxes($games) {
-	for ($i = 0; $i < count($games); $i++) {
+/**
+ * Adds an array of values to a certain post's meta
+ * @param	int		$id		The id of the post
+ * @param	ARRAY_A	$vals	The array of keys and values to add meta to
+ */
 
-	}
-	return '';
-}
-
-/*make adding post meta easier*/
 function upmeta($id, $vals) {
 	$k = array_keys($vals);
 	for ($i = 0; $i < count($k); $i++) {
@@ -1202,7 +1328,11 @@ function upmeta($id, $vals) {
 	}
 }
 
-//get the season number (simple digit)
+/**
+ * Gets a small int value based on the month of the current year
+ * @return	int
+ */
+
 function season_num() {
 	$today = getdate();
 	$num = intval($today['year']) - 2021;
@@ -1212,7 +1342,12 @@ function season_num() {
 	return $num;
 }
 
-/*get number 0 - 3 for game */ 
+/**
+ * Returns a number for a game title, starting from 0 in alphabetical order
+ * @param	string	$name	The name of the game
+ * @return	int
+ */
+
 function name_to_game_id($name) {
 	$id = -1;
 	$name = trim(strtolower($name));
@@ -1228,12 +1363,15 @@ function name_to_game_id($name) {
 	return $id;
 }
 
-/*create team pages 
-NEED: image
-*/ 
+/**
+ * Creates all new subteam pages and parent page when a new school is to be added
+ * @param	string	$name	The name of the school
+ * @param	ARRAY_A	$gamesd	The array of games to create pages for
+ * @return ARRAY_A
+ */
+
 function create_new_team($name, $gamesd) {
 	$stpages='';
-	$content = game_boxes($games);
 	$season = season_num();
 	$parent_args = array(
 		'post_content' => $content,
@@ -1303,7 +1441,13 @@ function create_new_team($name, $gamesd) {
 	);
 }
 
-//add new teams and add recent season to all
+/**
+ * Creates new sub team pages for a parent team, and adds the newest season to their taxonomies
+ * @param	int		$teamid		The id of the parent team
+ * @param	ARRAY_A	$gamesd		The array of games to create pages for
+ * @return	array
+ */
+
 function append_and_add_teams($teamid, $gamesd) {
 	$stpages = '';
 	$season = season_num();
@@ -1365,7 +1509,13 @@ function append_and_add_teams($teamid, $gamesd) {
 	return $stpages;
 }
 
-//see if page exists, using both dashes primarily
+/**
+ * Determines whether a page exists, based off 2 title entries
+ * @param	string	$t1		The first title to check
+ * @param	string	$t2		The second title to check
+ * @return	int
+ */
+
 function pageexists($t1, $t2) {
 	$e = post_exists($t1);
 	if ($e) return $e;
@@ -1374,7 +1524,11 @@ function pageexists($t1, $t2) {
 	return -1;
 }
 
-//update season, use in team_renew
+/**
+ * Adds the current season to all subpages of a parent team, based off of the database entires
+ * @param	int	$teamid		The id of the parent team
+ */
+
 function update_team($teamid) {
 	$season_add = season_num();
 	global $wpdb;
@@ -1389,7 +1543,12 @@ function update_team($teamid) {
 	}
 }
 
-//convert simple number to season id [hardcoded=bad, look to change this later] *SEE BELOW*
+/**
+ * Gets the id of the current season, based off of either a string title or small integer entry
+ * @param	int|string	$s	The season's name or number
+ * @return	int
+ */
+
 function get_season($s) {
 	$se = 1359;
 	if ($s===1||$s==='Spring 2022') {
@@ -1404,15 +1563,21 @@ function get_season($s) {
 	return $se;
 }
 
+/**
+ * Get the name of the current season based off time of year
+ * @return	string
+ */
+
 function get_cseas() {
 	$year = 0;//this year
 	$month = 0; //this month
 	return ($month > 8 ? 'Fall ' : 'Spring ') . $year;
 }
 
+/**
+ * AJAX function for team manager registration
+ */
 
-
-/*tm registration*/
 function tm_register() {
 	if (strpos($_SERVER['HTTP_REFERER'], 'https://tecschoolesports.com')===false) { die();}
 
@@ -1575,12 +1740,22 @@ function tm_register() {
 add_action('wp_ajax_tm_register', 'tm_register');
 add_action('wp_ajax_nopriv_tm_register', 'tm_register');
 
+/**
+ * Determines whether a team has registered to the database
+ * @param	int	$id		The team id to look for
+ * @return	boolean
+ */
+
 function is_team_in_db($id) {
 	global $wpdb;
 	$sql = $wpdb->prepare("SELECT * FROM hs_staff WHERE teamid = '$id';");
 	$res = $wpdb->get_results($sql, ARRAY_A);
 	return $wpdb->num_rows>0;
 }
+
+/**
+ * AJAX function to add the new season to parent team and all of its sub teams
+ */
 
 function team_renew() {
 	if (strpos($_SERVER['HTTP_REFERER'], 'https://tecschoolesports.com')===false) { die();}
@@ -1594,11 +1769,23 @@ function team_renew() {
 //dd_action('wp_ajax_team_renew', 'team_renew');
 //add_action('wp_ajax_nopriv_team_renew', 'team_renew');
 
+/**
+ * Gets the sportspress page id of a student
+ * @param	string	$name	The name of the student
+ * @return	int
+ */
 
 function getstudentid($name) {
 	$name=ucwords($name);
 	return post_exists($name);
 }
+
+/**
+ * Verifies that the captcha was completed successfully
+ * @param	string	$captcha	The captcha value sent from the client
+ * @param	string	$remote		$_SERVER['REMOTE_ADDR'] value
+ * @return	boolean
+ */
 
 function verify_captcha($captcha, $remote) {
 	$ch = curl_init();
@@ -1617,7 +1804,9 @@ function verify_captcha($captcha, $remote) {
 	return $resp->success;
 }
 
-/*student registration */
+/**
+ * AJAX function for student registration
+ */
 
 function student_register() {
 	if (strpos($_SERVER['HTTP_REFERER'], 'https://tecschoolesports.com')===false) { die();}
@@ -1743,6 +1932,12 @@ function student_register() {
 add_action('wp_ajax_student_register', 'student_register');
 add_action('wp_ajax_nopriv_student_register', 'student_register');
 
+/**
+ * Determines whether a student has registered to the database
+ * @param	int	$id		The sportspress page id of the student to search for
+ * @return	boolean
+ */
+
 function is_student_in_db($id) {
 	global $wpdb;
 	$sql = $wpdb->prepare("SELECT * FROM hs_players WHERE pageid = '$id';");
@@ -1750,11 +1945,24 @@ function is_student_in_db($id) {
 	return $wpdb->num_rows>0;
 }
 
+/**
+ * Creates a student page, and adds 'owner' field to a player's sportspress page post meta
+ * @param	string	$name	The name of the student
+ * @param	string	$sid	The user id of the student (owner)
+ * @return	int
+ */
+
 function create_student($name, $sid) {
 	$id = createstudent($name);
 	update_post_meta($id, 'owner', $sid);
 	return $id;
 }
+
+/**
+ * Creates a new sportspress page for a student
+ * @param	string	$name	The name of the student
+ * @return	int
+ */
 
 function createstudent($name) {
 	$student_args = array(
@@ -1766,6 +1974,13 @@ function createstudent($name) {
 	);
 	return wp_insert_post($student_args);
 }
+
+/**
+ * Adds sportspress information such as seasons and leagues to a student's sportspress page post meta
+ * @param	int		$id		The of the student's sportspress page
+ * @param	array	$games	The array of games that the student will be participating in
+ * @param	string	$school	The name of the school that the student attends
+ */
 
 function add_student_data($id, $games, $school) {
 	$season = get_season(season_num());
@@ -1794,17 +2009,39 @@ function add_student_data($id, $games, $school) {
 	wp_set_post_terms($id, get_term($season, 'sp_season', ARRAY_A),'sp_season', true);
 }
 
+/**
+ * Adds the current season to a students's sportspress post meta
+ * @param	string	$username	The name of the student
+ */
+
 function update_student($username) {
 	$user = get_user_by($login);
 }
+
+/**
+ * Gets the IGN of a student
+ * @param	int	$id		The student's sportspress page id
+ * @return	string
+ */
 
 function get_ign($id) {
 	return get_post_meta($id, 'ign', true);
 }
 
+/**
+ * Gets the captcha private key
+ * @return	string
+ */
+
 function get_private_key() {
 	return '6LdZjm4eAAAAANsiW0zHQedpRO8euafhVx8DHC66';
 }
+
+/**
+ * Gets the school code of a team from the database
+ * @param	string	$uid	The user id of the team manager
+ * @return	string
+ */
 
 function find_schoolcode($uid) {
 	global $wpdb;
@@ -1814,6 +2051,10 @@ function find_schoolcode($uid) {
 	}
 	return 0;
 }
+
+/**
+ * AJAX function to add a student from the /ryan page
+ */
 
 function ryan_add_player() {
 	if (strpos($_SERVER['HTTP_REFERER'], 'https://tecschoolesports.com')===false) { die();}
@@ -1848,8 +2089,6 @@ function ryan_add_player() {
 	//add post meta
 	update_post_meta($id, 'ign', $ign);
 
-
-
 	echo '[Success] Player ' . $exists ? 'existed' : 'created' . '. ID: ' . $id;
 
 	die();
@@ -1857,6 +2096,10 @@ function ryan_add_player() {
 
 add_action('wp_ajax_ryan_add_player', 'ryan_add_player');
 add_action('wp_ajax_nopriv_ryan_add_player', 'ryan_add_player');
+
+/**
+ * AJAX function to update a student's IGN post meta
+ */
 
 function update_player_ign() {
 
@@ -1885,5 +2128,15 @@ function update_player_ign() {
 
 add_action('wp_ajax_update_player_ign', 'update_player_ign');
 add_action('wp_ajax_nopriv_update_player_ign', 'update_player_ign');
+
+/**
+ * Determines whether page a is a subteam page or not
+ * @param	int	$id		The page id to check
+ * @return	boolean
+ */
+
+function is_subteam($id) {
+	return get_the_terms($id, 'sp_league');
+}
 
 ?>
