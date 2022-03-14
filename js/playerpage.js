@@ -1,4 +1,5 @@
 $(document).ready(function() {
+    document.getElementsByClassName('sp-player-details')[0].children[1].insertAdjacentHTML('afterend', `<dt>IGN</dt><dd>${playerinfo.ign}</dd>`);
     rcols();
 });
 

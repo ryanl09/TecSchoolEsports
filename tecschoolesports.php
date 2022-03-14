@@ -141,7 +141,15 @@ function tecinit() {
 		}
 
 		if (get_post_type()==='sp_player') {
+			$id = get_the_ID();
+			$ign = get_ign($id) ?? 'N/A';
+			global $wpdb;
+			$res = $wpdb->get_results("SELECT `ign` FROM hs_players WHERE pageid='" . $id . "';", ARRAY_A);
+			if($wpdb->num_rows > 0 && $ign !== $res[0]['ign']) {
+				$ign .= ' | alt: ' . $res[0]['ign'];
+			}
 			wp_register_script('playerpage', plugin_dir_url(__FILE__ ) . 'js/playerpage.js', array('jquery'));
+			wp_localize_script('playerpage', 'playerinfo', array('ign' => $ign));
 			wp_localize_script('playerpage', 'cols', getcols());
 			wp_enqueue_script('playerpage');
 		}
