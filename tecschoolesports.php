@@ -152,6 +152,9 @@ function tecinit() {
 			wp_localize_script('playerpage', 'playerinfo', array('ign' => $ign));
 			wp_localize_script('playerpage', 'cols', getcols());
 			wp_enqueue_script('playerpage');
+		} else if (get_post_type()==='sp_event') {
+			wp_register_script('eventpage', plugin_dir_url(__FILE__) . 'js/eventpage.js', array('jquery'));
+			wp_enqueue_script('eventpage');
 		}
     }
 }
@@ -220,7 +223,7 @@ function get_homepage_events() {
 			$year = explode('-', $date)[0];
 
 			$teams = get_post_meta($post->ID, 'sp_team', false);
-			$size = array(30, 30);
+			$size = array(42, 42);
 
 			if ($year > '2020') {
 				$arr[count($arr)] = array(
@@ -602,6 +605,8 @@ function getstats() {
 			));
 		$c_stats = array();
 
+		$season = get_season(season_num());
+
 		if ($query->have_posts()) {
 			$i = 0;
 			$thecount=0;
@@ -616,7 +621,7 @@ function getstats() {
 					$pm = get_post_meta($pl_id, 'sp_assignments', false);
 					$lnfo = explode('_', $pm[0], 3);
 					
-					$all = $stats[$lnfo[0]][$lnfo[1]];
+				$all = $stats[$lnfo[0]/*[$lnfo[1]*/[$season]];
 					$disp = stat_i($target_g, $all, $player_name);
 					
 					$c_stats[$thecount] = $disp;
@@ -715,6 +720,24 @@ function get_league_id($g) {
 		return 1372;
 	}
 }
+
+/**
+ * Gets the image link from the game slug. For spteam template
+ * @param	string	$g	The slug to search
+ * @return	string
+ */
+
+ function slug_to_image($g) {
+	if (strpos($g, 'rocketleague') !== false) {
+		return 'https://tecschoolesports.com/wp-content/uploads/2022/03/tec-rl.png';
+	} else if (strpos($g, 'overwatch') !== false) {
+		return 'https://tecschoolesports.com/wp-content/uploads/2021/10/tec-ov-e1642548358670.png';
+	} else if (strpos($g, 'knockoutcity') !== false) {
+		return '';
+	} else if (strpos($g, 'valorant') !== false) {
+		return 'https://tecschoolesports.com/wp-content/uploads/2022/03/tecva.png';
+	}
+ }
 
 /**
  * Returns an array of information for the casters page
@@ -850,6 +873,8 @@ function alerta($d) {
  * @param	string	$game	The title to find the game from
  * @return	string
  */
+
+ // this is garbage
 
 function team_to_game($game) {
 	$ret = '';
@@ -1372,6 +1397,17 @@ function name_to_game_id($name) {
 }
 
 /**
+ * Creates the slug based off an input string
+ * @param	string	$input	The input string with capital letters and spaces
+ * @return	string
+ */
+
+function make_slug($input) {
+	$input = strtolower($input);
+	return str_replace(' ', '', $input);
+}
+
+/**
  * Creates all new subteam pages and parent page when a new school is to be added
  * @param	string	$name	The name of the school
  * @param	ARRAY_A	$gamesd	The array of games to create pages for
@@ -1385,7 +1421,8 @@ function create_new_team($name, $gamesd) {
 		'post_content' => $content,
 		'post_type' => 'sp_team',
 		'post_status' => 'publish',
-		'post_title' => ucwords($name)
+		'post_title' => ucwords($name),
+		'post_name' => make_slug($name)
 	);
 	$teamid = wp_insert_post($parent_args);
 	wp_set_post_terms($teamid, array(),'sp_league');
@@ -1405,7 +1442,8 @@ function create_new_team($name, $gamesd) {
 				'post_type' => 'sp_list',
 				'post_content' => '',
 				'post_status' => 'publish',
-				'post_author' => 1
+				'post_author' => 1,
+				'post_name' => makeslug($games[$i])
 			);
 			$gameid = name_to_game_id($games[$i]);
 			$listid = wp_insert_post($list_args);
@@ -1429,7 +1467,8 @@ function create_new_team($name, $gamesd) {
 				'post_status' => 'publish',
 				'post_title' => ucwords($name) . ' - ' . ucwords($games[$i]),
 				'post_parent' => $teamid,
-				'post_author' => 1
+				'post_author' => 1,
+				'post_name' => make_slug($games[$i])
 			);
 
 			$subpageid = wp_insert_post($subpage_args);
@@ -1501,7 +1540,8 @@ function append_and_add_teams($teamid, $gamesd) {
 					'post_status' => 'publish',
 					'post_title' => ucwords($school) . ' - ' . ucwords($games[$i]),
 					'post_parent' => $teamid,
-					'post_author' => 1
+					'post_author' => 1,
+					'post_name' => make_slug($games[$i])
 				);
 				$subexists = wp_insert_post($subpage_args);
 				wp_set_post_terms($subexists, get_term(get_league_id($games[$i]), 'sp_league', ARRAY_A),'sp_league');
@@ -1589,9 +1629,13 @@ function get_cseas() {
 function tm_register() {
 	if (strpos($_SERVER['HTTP_REFERER'], 'https://tecschoolesports.com')===false) { die();}
 
-    if (!(isset($_POST['username']) && isset($_POST['pass']) && isset($_POST['cpass']) && isset($_POST['pcperson']) && isset($_POST['pctitle'])
+        if (!(isset($_POST['username']) && isset($_POST['pass']) && isset($_POST['cpass']) && isset($_POST['pcperson']) && isset($_POST['pctitle'])
 	&& isset($_POST['pcemail']) && isset($_POST['pcphone']) && isset($_POST['pcdiscord']) && isset($_POST['team1games']) && isset($_POST['primarycolor']) 
-	&& isset($_POST['secondarycolor']))) { echo '[Error] Fields are missing!'; die(); }
+	&& isset($_POST['secondarycolor']))) { 
+
+		//$echo = $_POST['username'] .'|'. $_POST['pass'] .'|'. $_POST['cpass'] .'|'. $_POST['pcperson'] .'|'. $_POST['pctitle'] .'|'. $_POST['pcemail'] .'|'. $_POST['pcphone'] .'|'. $_POST['pcdiscord'] .'|'. $_POST['team1games'] .'|'. $_POST['primarycolor'] .'|'. $_POST['secondarycolor'];
+		echo '[Error] Fields are missing!'; die(); 
+	}
 
 	/* verify captcha */
 
@@ -1625,8 +1669,8 @@ function tm_register() {
     if (!preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/", $tec_email) ) { echo '[Error] Invalid email.'; die(); }
     if (username_exists($tec_user)) { echo '[Error] An account with that username already exists.'; die(); }
 
-	if (!($tec_user && $tec_email && $tec_pass && $tec_cpass && $school && $school && $mascot && $pcperson && $pctitle && $pcphone && $pcdiscord && $primarycolor 
-	&& $secondarycolor&& $socialmedia)) { echo '[Error] Fields are missing!'; die(); }
+	if (!($tec_user && $tec_email && $tec_pass && $tec_cpass && $school && $school && $pcperson && $pctitle && $pcphone && $pcdiscord && $primarycolor 
+	&& $secondarycolor)) { echo '[Error] Fields are missing!'; die(); }
 
 	$args = array(
 		'user_login' => $tec_user,

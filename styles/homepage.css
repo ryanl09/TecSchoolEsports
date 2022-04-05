@@ -1,3 +1,7 @@
+html {
+    scroll-behavior: smooth;
+}
+
 .matchcontentslider {
     width:100%;
     height:7em;
@@ -7,6 +11,7 @@
     align-items: center;
     justify-content: center;*/
     background-color: #1e1e1e;
+    white-space: nowrap;
 }
 
 .matchcontentbox {
@@ -16,10 +21,12 @@
     box-shadow: #101010;
     margin:2px;
     border:solid 1px #1e1e1e;
+    display:inline-block;
 }
 
 .matchboxheader {
     height:30%;
+    text-align:center;
 }
 
 .matchboxheader > p {
@@ -28,12 +35,20 @@
 
 .matchboxbody {
     height:70%;
+    display: grid;
+    grid-template-columns: auto auto auto;
+    align-content: space-around;
 }
 
-.matchboxbody > img {
-    position:relative;
-    margin-right:5px;
-    float:left;
+.griditem {
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.griditem > img {
+    width:42px;
+    height: 42px;
 }
 
 .btnS {
@@ -62,8 +77,19 @@
 .btnR:hover, .btnL:hover {
     background-color:#ffffff;
     color:#101010;
+    cursor:pointer;
 }
 
 .matchcontentslider:hover > .btnL, .matchcontentslider:hover > .btnR {
     opacity:0.7;
+}
+
+@media screen and (max-width: 1024px) {
+    .btnS {
+        display:none;
+    }
+
+    .matchcontentslider {
+        overflow-x:scroll;
+    }
 }

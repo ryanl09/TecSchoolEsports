@@ -39,14 +39,15 @@ event links*/
             'cpass': fe(15),'socialmedia': fe(16), 'gre_captcha': grecaptcha.getResponse()
             },
             success:function(response) {
-                Popup.show(response);
+                //Popup.show(response);
+                console.log(response);/*
                 obj('loadingdots').remove();
                 if (response.indexOf('[Success]')!==-1) {
                     obj('loadingdotsnotice').innerHTML='If you were not redirected, please click <a href="https://tecschoolesports.com/tmdashboard">here</a>';
                     window.location="https://tecschoolesports.com/tmdashboard";
                 } else {
                     obj('tmregister').disabled=false;
-                }
+                }*/
 
             },
             error:function(xhr, response, error) {

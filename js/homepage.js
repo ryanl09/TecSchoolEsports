@@ -8,12 +8,28 @@ $(document).ready(function() {
     document.getElementById('hpregister').onclick=()=>{
         window.location='https://tecschoolesports.com/register';
     }
+    let matchbody = '';
+    for (let i = 0; i < 10; i++) {
+        let addStyle='';
+        if (i%2==1) {
+            addStyle=`style="background-color:#242428;"`;
+        }
+        matchbody += `<div class="matchcontentbox" ${addStyle}>
+                        <div class="matchboxheader">
+                            <a href="${events[i].url}"><p>${DateFormatter.date(events[i].date)}</p></a>
+                        </div>
+                        <div class="matchboxbody">
+                            <div class="griditem">${events[i].img[0]}</div>
+                            <div class="griditem"><p class="mphp">vs</p></div>
+                            <div class="griditem">${events[i].img[1]}</div>
+                        </div>
+                    </div>`;
+    }
 
-    console.log(events[0].img[0]);
     var html = `<div id="mcslider" class="matchcontentslider">
-    <a href="javascript:slideMatch(-1);" class="btnS btnL">⏴</a>
-    <a href="javascript:slideMatch(1);" class="btnS btnR">⏵</a>
-    
+    <a id="buttonleft" class="btnS btnL">⏴</a>
+    <a id="buttonright" class="btnS btnR">⏵</a>`;
+    /*
         <div class="matchcontentbox">
             <div class="matchboxheader">
                 <p>${events[0].date}</p>
@@ -26,13 +42,19 @@ $(document).ready(function() {
                 ${events[0].img[1]}
                 <p class="mphp">${events[0].teams[1]}</p>
             </div>
-
-            
-        </div>
+        </div>*/
     
-    </div>`;
+    html+=`${matchbody}</div>`;
     
     ob('content').insertAdjacentHTML('beforebegin', html);
+
+    ob('buttonleft').onclick = () => {
+        slideMatch(-5);
+    }
+
+    ob('buttonright').onclick = ()=> {
+        slideMatch(5);
+    }
 });
 
 let ob=(t)=>{
@@ -40,8 +62,13 @@ let ob=(t)=>{
 }
 
 function slideMatch(direction) {
-    slide_pos += direction;
-
+    const slider = document.getElementById('mcslider');
+    
+    slider.scroll({
+        left:slider.scrollLeft+direction*100,
+        top:0,
+        behavior:'smooth'
+    });
 }
 
 let datestr = (date) => {

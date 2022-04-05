@@ -30,7 +30,7 @@ $(document).ready(function(){
     moresubmenu+='</ul>';
     var more = item('menu-more', ahref('#', 'More')+moresubmenu);
 
-    var store = item('menu-store', ahref('https://theesportcompany.com/store', 'Store'));
+    //var store = item('menu-store', ahref('https://theesportcompany.com/store', 'Store'));
 
     var prof='';
     if (info.loggedin) {
@@ -40,7 +40,9 @@ $(document).ready(function(){
             accsubmenu += subitem('accountdashboard', ahref('https://tecschoolesports.com/tmdashboard', 'Dashboard'));
         }
         accsubmenu += subitem('accountinbox', ahref('https://tecschoolesports.com/inbox/', 'Inbox'));
-        accsubmenu += subitem('accountmygames', ahref('https://tecschoolesports.com/mygames', 'My Games'));
+        if (info.role==='student'||info.role==='admin') {
+            accsubmenu += subitem('accountmygames', ahref('https://tecschoolesports.com/mygames', 'My Games'));
+        }
         accsubmenu += subitem('accountsettings', ahref('https://tecschoolesports.com/settings', 'Settings'));
         accsubmenu += '</ul>';
         prof = item('menu-account',  ahref('https://tecschoolesports.com', 'Account')+accsubmenu);
@@ -71,7 +73,7 @@ $(document).ready(function(){
     mobmenu += msubitem('mmorefundraising', mahref('https://tecschoolesports.com/fundraising','Fundraising'));
     mobmenu += '</ul>';
 
-    mobmenu += '<a class="mobmenuheader" href="https://theesportcompany.com/store">Store</a>';
+    //mobmenu += '<a class="mobmenuheader" href="https://theesportcompany.com/store">Store</a>';
 
     if (info.loggedin) {
         mobmenu += `<a class="mobmenuheader" href="#" onclick="slide('mobaccount')">Account</a>`;
@@ -81,7 +83,9 @@ $(document).ready(function(){
             mobmenu += msubitem('maccountdashboard', mahref('https://tecschoolesports.com/tmdashboard', 'Dashboard'));
         }
         mobmenu += msubitem('maccountinbox', mahref('https://tecschoolesports.com/inbox/', 'Inbox'));
-        mobmenu += msubitem('maccountmygames', mahref('https://tecschoolesports.com/mygames', 'My Games'));
+        if (info.role==='student'||info.role==='admin') {
+            mobmenu += msubitem('maccountmygames', mahref('https://tecschoolesports.com/mygames', 'My Games'));
+        }
         mobmenu += msubitem('maccountsettings', mahref('https://tecschoolesports.com/settings', 'Settings'));
         mobmenu += '</ul>';
     } else {  
@@ -90,11 +94,10 @@ $(document).ready(function(){
     }
 
     mobmenu += '</ul>';
-
     mobmenu += '</div>';
 
     /*COMBINE EVERYTHING*/
-    var items = listwrap('menu-list', 'menulist', league+art+more+store+prof);
+    var items = listwrap('menu-list', 'menulist', league+art+more/*+store*/+prof);
     //<img src="https://i0.wp.com/tecschoolesports.com/wp-content/uploads/2021/10/Forest-Hills-Esports-Logo-2022-1.png" width="64" class="menu-logo">
     var left = span('menu-logo-box', menulogo(img('img-menu-logo', "https://tecschoolesports.com/wp-content/uploads/2022/01/tectr2.png", 64, 32, 'id="teclogo"')), 'left');
     var n = nav('tec-nav', items);
@@ -254,4 +257,8 @@ function imgclick(ext) {
 
 function stdclick(ext) {
     window.location='https://tecschoolesports.com/table/' + ext;
+}
+
+function teamclick(ext) {
+    window.location=ext;
 }

@@ -1,6 +1,6 @@
 class DateFormatter {
-    days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-    months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    static days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    static months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
     /**
      * Convert date string to day of the week
@@ -9,8 +9,8 @@ class DateFormatter {
      */
 
     static date(_date, _time='12:00 PM') {
-        let d = new Date(ob.date + ' ' + _time);
-        return `${days[d.getDay()]} ${months[d.getMonth()]}`
+        let d = new Date(_date + ' ' + _time);
+        return `${this.days[d.getDay()]}, ${this.months[d.getMonth()]} ${parseInt(_date.split("-")[2],10)}`;
     }
 
     /** 
