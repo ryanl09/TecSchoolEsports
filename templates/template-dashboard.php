@@ -6,14 +6,14 @@
  *
  * @package Rookie
  */
-
+get_header();
 $user = wp_get_current_user();
-
+/*
 if (!($user->ID && (in_array('team_manager', $user->roles) || in_array('administrator', $user->roles)))) {
     wp_redirect('https://tecschoolesports.com');
 } else {
     get_header();
-}
+}*/
 
 ?>
 
@@ -93,7 +93,7 @@ if (!($user->ID && (in_array('team_manager', $user->roles) || in_array('administ
 
                 <h2>Players</h2>
                 <h5 id="gametitle">{game}</h5>
-                <div id="playerstable">
+                <div id="playerstable" class="gametablecontainer">
                     <table>
                         <thead>
                             <tr>

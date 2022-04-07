@@ -94,4 +94,7 @@
       margin: 0;
   }
 
-  
+  .gametablecontainer {
+    float: left;
+    width:49%;
+  }

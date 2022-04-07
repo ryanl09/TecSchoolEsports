@@ -15,20 +15,22 @@ add_action('init', 'tecschoolesports');
  */
 
 function tecschoolesports() {
-	wp_register_script('main', plugin_dir_url(__FILE__) . 'js/main.js');
-	$roles = wp_get_current_user()->roles;
-	$maxrole = '';
-	if (in_array('student', $roles)) {
-		$maxrole='student';
+	if ( ! is_admin() ) {
+		wp_register_script('main', plugin_dir_url(__FILE__) . 'js/main.js');
+		$roles = wp_get_current_user()->roles;
+		$maxrole = '';
+		if (in_array('student', $roles)) {
+			$maxrole='student';
+		}
+		if (in_array('team_manager', $roles)) {
+			$maxrole='tm';
+		}
+		if (in_array('administrator', $roles)) {
+			$maxrole='admin';
+		}
+		wp_localize_script('main', 'info', array('loggedin' => is_user_logged_in(), 'role' => $maxrole));
+		wp_enqueue_script('main');
 	}
-	if (in_array('team_manager', $roles)) {
-		$maxrole='tm';
-	}
-	if (in_array('administrator', $roles)) {
-		$maxrole='admin';
-	}
-	wp_localize_script('main', 'info', array('loggedin' => is_user_logged_in(), 'role' => $maxrole));
-	wp_enqueue_script('main');
 }
 
 add_action('wp_enqueue_scripts', 'tecinit');
