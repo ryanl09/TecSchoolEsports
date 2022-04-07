@@ -13,6 +13,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="https://tecschoolesports.com/htdocs/wp-content/plugins/tecschoolesports/js/util/DateFormatter.js" type="text/javascript"></script>
 <script src="https://tecschoolesports.com/htdocs/wp-content/plugins/tecschoolesports/js/util/Popup.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/htdocs/wp-content/plugins/tecschoolesports/styles/tooltip.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>

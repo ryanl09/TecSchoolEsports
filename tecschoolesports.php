@@ -196,6 +196,31 @@ function remove_game_from($title) {
 	return substr($title, 0, $dash1-1);
 }
 
+/**
+ * Compares to half point of year to determine which date to use for date query.
+ * @return	array
+ */
+
+ function get_date_query_info() {
+	$t=getdate();
+	$month = intval($t['mon']);
+	$y = intval($t['year']);
+
+	if ($month >= 2 && $month <= 7) { //spring season, current year
+		return array(
+			'before' => 'August 31st, ' . $y,
+			'after' => 'February 15th, ' . $y,
+			'inclusive' => true
+		);
+	} else {
+		return array(
+			'before' => 'January 31st, ' . ($y+1),
+			'after' => 'September 1st, ' . $y,
+			'inclusive' => true
+		);
+	}
+ }
+
 //get events for homepage blocks
 
 /**
@@ -205,11 +230,14 @@ function remove_game_from($title) {
 
 function get_homepage_events() {
 	$arr = [];
+	$dqi = get_date_query_info();
 	$args = array(
 		'post_type' => 'sp_event', 
 		'post_status' => 'publish',
-		'posts_per_page' => -1
+		'posts_per_page' => -1,
+		'date_query' => get_date_query_info()
 	);
+
 	$query = new WP_Query($args);
 	if ($query->have_posts()) {
 		$i = 0;
@@ -231,7 +259,8 @@ function get_homepage_events() {
 					'date' => $date,
 					'time' => $time,
 					'teams' => [remove_game_from(get_the_title($teams[0])), remove_game_from(get_the_title($teams[1]))],
-					'img' => [get_the_post_thumbnail($teams[0], $size), get_the_post_thumbnail($teams[1], $size)]
+					'img' => [get_the_post_thumbnail($teams[0], $size), get_the_post_thumbnail($teams[1], $size)],
+					'game' => team_to_game(get_the_title($teams[0]))
 				);
 			}
 			$i++;

@@ -17,6 +17,7 @@ $(document).ready(function() {
         matchbody += `<div class="matchcontentbox" ${addStyle}>
                         <div class="matchboxheader">
                             <a href="${events[i].url}"><p>${DateFormatter.date(events[i].date)}</p></a>
+                            <p class="matchboxgame">${events[i].game}</p>
                         </div>
                         <div class="matchboxbody">
                             <div class="griditem">${events[i].img[0]}</div>

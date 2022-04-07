@@ -91,6 +91,19 @@ if (!($user->ID && (in_array('team_manager', $user->roles) || in_array('administ
                     </table>
                 </div>
 
+                <h2>Players</h2>
+                <h5 id="gametitle">{game}</h5>
+                <div id="playerstable">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>IGN</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+
             </div>
 		</main><!-- #main -->
 	</div><!-- #primary -->

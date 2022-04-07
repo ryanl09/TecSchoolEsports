@@ -29,6 +29,16 @@ html {
     text-align:center;
 }
 
+.matchboxheader > a {
+    margin-top:4px;
+    color:#ddd;
+    transition: color .4s;
+}
+
+.matchboxheader > a:hover {
+    color: #fff;
+}
+
 .matchboxheader > p {
     font-weight: 600;
 }
@@ -58,7 +68,7 @@ html {
     background-color:#bfbfbf;
     opacity:0;
     transition: all .2s ease;
-    z-index:100;
+    z-index:10;
     font-size:30px;
     color:#1e1e1e;
     text-align: center;
@@ -92,4 +102,12 @@ html {
     .matchcontentslider {
         overflow-x:scroll;
     }
+}
+
+.matchboxgame {
+    position: relative;
+    top:-20px;
+    color:#999;
+    text-decoration: underline;
+    font-size: 14px;
 }
