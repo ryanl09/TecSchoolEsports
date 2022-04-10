@@ -6,14 +6,13 @@
  *
  * @package Rookie
  */
-get_header();
 $user = wp_get_current_user();
-/*
+
 if (!($user->ID && (in_array('team_manager', $user->roles) || in_array('administrator', $user->roles)))) {
     wp_redirect('https://tecschoolesports.com');
 } else {
     get_header();
-}*/
+}
 
 ?>
 
@@ -42,7 +41,7 @@ if (!($user->ID && (in_array('team_manager', $user->roles) || in_array('administ
             <?php 
                 $code = find_schoolcode($user->ID);
                 $link = "https://tecschoolesports.com/register/student/?schoolcode=$code";
-                echo '<p>Send this link to your students: <a href="'.$link. '">' . $link . '</a></p>';
+                echo '<p class="schoolcodelink">Send this link to your students: <a href="'.$link. '">' . $link . '</a></p>';
             ?>
             <br>
             <div class="tmdashboardwrapper">
@@ -50,10 +49,9 @@ if (!($user->ID && (in_array('team_manager', $user->roles) || in_array('administ
                     <?php
                         $buttons = dashboard_teams(true);
                         for ($i = 0; $i < count($buttons); $i++) { 
-                            echo '<button id="game' . $i . '" class="mygamesbox" onclick="updatedashboard(' . $i . ')">' . $buttons[$i] . '</button>';
+                            echo '<button id="game' . $i . '" class="mygamesbox">' . $buttons[$i] . '</button>';
                         }
                     ?>
-
                 </div>
 
                 <h2 id="upcomingmatches" class="clickable">Upcoming Matches ⯆</h2>
@@ -92,16 +90,29 @@ if (!($user->ID && (in_array('team_manager', $user->roles) || in_array('administ
                 </div>
 
                 <h2>Players</h2>
-                <h5 id="gametitle">{game}</h5>
+                <div class="playersheader">
+                    <h5 id="gametitle">{game}</h5>
+                    
+                    <input type="text" id="playersearch" class="dashboardsearch">
+                    <h2>
+                        <a id="addplayer" class="ploption">➕</a>
+                    </h2>
+                </div>
+                
                 <div id="playerstable" class="gametablecontainer">
                     <table>
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>IGN</th>
+                                <th style="width:50%;">Name</th>
+                                <th style="width:50%;">Options</th>
                             </tr>
                         </thead>
+                        <tbody id="playersbody">
+                        </tbody>
                     </table>
+                </div>
+                <div id="playersloader" class="loader-wrapper">
+                    <div class="loader-"></div>
                 </div>
 
             </div>

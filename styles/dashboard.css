@@ -95,6 +95,24 @@
   }
 
   .gametablecontainer {
-    float: left;
-    width:49%;
+    width:100%;
+  }
+
+  .schoolcodelink {
+    text-align:center;
+  }
+
+  .ploption {
+    color:#aaa;
+    transition: all .4s ease;
+    font-size:26px;
+  }
+
+  .ploption:hover {
+    color:#fff;
+    cursor:pointer;
+  }
+
+  #addplayer, #playersearch {
+    float:right;
   }

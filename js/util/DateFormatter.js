@@ -9,8 +9,9 @@ class DateFormatter {
      */
 
     static date(_date, _time='12:00 PM') {
+        _date = _date.replace(new RegExp('-', 'g'), '/');
         let d = new Date(_date + ' ' + _time);
-        return `${this.days[d.getDay()]}, ${this.months[d.getMonth()]} ${parseInt(_date.split("-")[2],10)}`;
+        return `${this.days[d.getDay()]}, ${this.months[d.getMonth()]} ${parseInt(_date.split("/")[2],10)}`;
     }
 
     /** 
@@ -19,7 +20,7 @@ class DateFormatter {
     */
 
     static time(_time) {
-        var tdata = d;
+        var tdata = _time.split(':');
         var h = parseInt(tdata[0]);
         const suffix = h >= 12 ? 'PM' : 'AM';
         h = ((h + 11) % 12 + 1);

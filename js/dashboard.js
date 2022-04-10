@@ -1,3 +1,4 @@
+//(function(){
 let ACTIVE_BOX = 0;
 
 let um=false,pm=false;
@@ -5,15 +6,27 @@ let um=false,pm=false;
 let selected_players = [];
 let EVENT_ID=-1;
 
-var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const players_cache=[];
+
+const titles = [];
 
 $(document).ready(function() {
 
+    for (let i = 0; i < document.getElementsByClassName('mygamesbox').length; i++) {
+        players_cache[i]=undefined;
+        titles[i]=obj(`game${i}`).innerText;
 
+        (function() {
+            var j = i;
+            document.getElementById(`game${j}`).addEventListener('click', function() {
+                updatedashboard(j);
+            });
+        }());
+    }
     /*
     <p id="rosterstatustext" class="rosterstatus">Roster: Not submitted</p>
     <button id="subtheroster" onclick="updateroster(0);" class="hollowbtn">Submit Now</button> */
+
 
     obj('upcomingmatches').onclick = function() {
         if(um){
@@ -62,8 +75,6 @@ $(document).ready(function() {
         }
       }
 
-
-
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     ACTIVE_BOX = urlParams.get('selection') ?? 0;
@@ -71,6 +82,19 @@ $(document).ready(function() {
         ACTIVE_BOX = 0;
     }
     updatedashboard(ACTIVE_BOX);
+
+
+
+    /*
+    need to download the players when dashboard is switch
+        -check if cached_players[index] is 'undefined', if it is then fetch
+            -if not, then just reuse
+        -refresh button in corner to refetch [current game only]
+    
+    */
+
+
+
 });
 
 
@@ -92,17 +116,28 @@ function tablehtml(i) {
     let html = '';
     for (let j = 0; j < cur.past.length; j++) {
         var time = getpm(cur.past[j].time.split(':'));
-        let bt = inf.events[1].past[0].roster!==0 ? button(i, j, 'p', true) : button(i, j, 'p', false);
+        let bt = button(i, j, 'p', inf.events[i].past[0].roster!==0);
         html += tr(td(cur.past[j].opponent) + td(cur.past[j].date) + td(time) + td(bt));
     }
     let html2 = '';
     for (let j = 0; j < cur.future.length; j++) {
         var time = getpm(cur.future[j].time.split(':'));
-        let bt = inf.events[1].future[0].roster!==0 ? button(i, j, 'f', true) : button(i, j, 'f', false);
+        let bt = button(i, j, 'f', inf.events[i].future[0].roster!==0);
         html2 += tr(td(cur.future[j].opponent) + td(cur.future[j].date) + td(time) + td(bt));
     }
     
     return [html, html2];
+}
+
+function update_players() {
+    obj('gametitle').innerHTML = titles[ACTIVE_BOX];
+    const table = obj('playersbody');
+    table.innerHTML = '';
+    if (players_cache[ACTIVE_BOX]===undefined) {
+        fetchPlayers(ACTIVE_BOX);
+    } else {
+        update_players_table(ACTIVE_BOX);
+    }
 }
 
 let getpm =(d)=> {
@@ -117,6 +152,7 @@ function updatedashboard(i) {
     let tbh = tablehtml(i);
     obj('pastmatchesbody').innerHTML = tbh[0];//past
     obj('ucmatchesbody').innerHTML = tbh[1];//future
+    update_players();
 }
 
 let tr=(t)=>{
@@ -160,7 +196,7 @@ let button = (n1, n2, l, st) => {
 function editroster(i, j, l) {
     let ob = l==='p'?inf.events[i].past[j]:inf.events[i].future[j];
     let d = new Date(ob.date + ' ' + getpm(ob.time.split(':')));
-    obj('mbheadertext').innerHTML = 'VS ' + ob.opponent + ' on ' + days[d.getDay()] + ' ' + months[d.getMonth()] +', ' + d.getFullYear() + ' @ ' + getpm(ob.time.split(':'));
+    obj('mbheadertext').innerText = 'VS ' + ob.opponent + ' on ' + DateFormatter.date(ob.date) + ', ' + d.getFullYear() + ' @ ' + DateFormatter.time(ob.time);
     let checks='';
     for(let k = 0; k < ros[i].length; k++) {
         checks+=cb(ros[i][k].name, 'check'+k, ros[i][k].id);
@@ -217,4 +253,51 @@ function addpl(id) {
     selected_players[selected_players.length]=id;
 }
 
+function update_players_table(id) { 
+    var html='';
+    const table = obj('playersbody');
+    for (let i = 0; i < players_cache[id].length; i++) {
+        const pl_options = document.createElement('div');
+        pl_options.insertAdjacentElement('afterbegin', subtract(players_cache[id][i].id));
 
+        var td1 = document.createElement('td');
+        td1.innerText = players_cache[id][i].name;
+
+        var td2 = document.createElement('td');
+        td2.insertAdjacentElement('afterbegin', pl_options);
+
+        var row = document.createElement('tr');
+        row.insertAdjacentElement('afterbegin', td1);
+        row.insertAdjacentElement('beforeend', td2);
+        
+        table.insertAdjacentElement('afterbegin', row);
+    }
+}
+
+let subtract = (id) => {
+    var s = document.createElement('a');
+    s.innerText = '➖';
+    s.classList.add('ploption');
+    s.addEventListener('click', function() {
+        alert(id);
+    });
+    return s;
+}
+
+function fetchPlayers(id) {
+    document.getElementById('playersloader').style.visibility='visible';
+    $.ajax({
+        type:'post',
+        url:myAjax.ajaxurl,
+        dataType: 'json',
+        data: {action: 'fetch_players', 'game':titles[id]},
+        success:function(response) {
+            players_cache[id] = response;
+            document.getElementById('playersloader').style.visibility='hidden';
+            update_players_table(id);
+        },
+        error:function(xhr,response,error){
+            console.log(`${error}: ${response}`);
+        }
+    });
+} //})();

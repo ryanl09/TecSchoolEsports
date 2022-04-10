@@ -13,13 +13,16 @@ function rcols() {
             case 'rocket league d2':
                 rem(cols[2], i);
                 break;
-            case 'overwatch':
+            case 'overwatch d1':
+            case 'overwatch d2':
                 rem(cols[1], i)
                 break;
-            case 'valorant':
+            case 'valorant d1':
+            case 'valorant d2':
                 rem(cols[3], i)
                 break;
-            case 'knockout city':
+            case 'knockout city d1':
+            case 'knockout city d2':
                 rem(cols[0], i);
                 break;
         }

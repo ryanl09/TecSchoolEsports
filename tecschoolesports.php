@@ -115,7 +115,7 @@ function tecinit() {
 			wp_register_script('mygames', plugin_dir_url(__FILE__) . 'js/mygames.js', array('jquery'));
 			wp_localize_script('mygames', 'inf', my_games_info($user));
 			wp_enqueue_script('mygames');
-		} else if ($post_title==='dashboard') {
+		} else if ($post_title==='dashboard'||$post_title==='team manager dashboard') {
 			$dteams = dashboard_teams(false);//$sendeve[$add]=get_dash_events($title);
 			$inf = array('events' => array());
 			$ros = array();
@@ -439,6 +439,9 @@ add_action('admin_enqueue_scripts', 'my_admin_enqueue');
  */
 
 function get_players($teamid) {
+	if ($teamid===0) {
+		return [];
+	}
 	$players = [];
 	$query = new WP_Query(array(
 		'post_type' => 'sp_player',
@@ -1129,7 +1132,7 @@ function get_dash_events($team, $tid) {
 
 				
 
-				$push = array('name' => $pagename, 'opponent' => isolate_opponent($pagetitle, $team), 'id' => $pageid, 'title' => $pagetitle, 'date' => $date, 'time' => $time, 'roster' => get_event_roster($tid, $pageid));
+			$push = array('name' => $pagename, 'opponent' => isolate_opponent($pagetitle, $team), 'id' => $pageid, 'title' => $pagetitle, 'date' => $date, 'time' => $time, 'roster' => get_event_roster($tid, $pageid));
 
 				if (date('Y-m-d') > $date) {
 					$array['past'][count($array['past'])] = $push;
@@ -1139,8 +1142,8 @@ function get_dash_events($team, $tid) {
 			}
 			$i++;
 		}
-		wp_reset_postdata();
 	}
+	wp_reset_postdata();
 	return $array;
 }
 
@@ -1313,7 +1316,6 @@ function dashboard_teams($stronly) {
  */
 
 function get_event_roster($teamid, $eventid) {
-	if (strpos($_SERVER['HTTP_REFERER'], 'https://tecschoolesports.com')===false) { die();}
 		
 	$index = array_search($teamid, get_post_meta($eventid, 'sp_team', false));
 	$players = get_post_meta($eventid, 'sp_player', false);
@@ -2221,5 +2223,55 @@ add_action('wp_ajax_nopriv_update_player_ign', 'update_player_ign');
 function is_subteam($id) {
 	return get_the_terms($id, 'sp_league');
 }
+
+/**
+ * AJAX function to request players on the dashboard after loading to prevent
+ * slow page load times
+ */
+
+ function fetch_players() {
+	$ret = array(
+		'msg' => '[Error] Could not fetch players.'
+	);
+	
+	if (!isset($_POST['game'])) {
+		echo json_encode(array(
+			'msg' => '[Error] No game provided.'
+		));
+		die();
+	}
+
+	$game = sanitize_text_field($_POST['game']);
+
+	$user = wp_get_current_user();
+	if (!(in_array('tm', $user->roles) || in_array('administrator', $user->roles))) {
+		echo json_encode(array(
+			'msg' => '[Error] Invalid permissions.'
+		));
+		die();
+	}
+
+	/*
+	$id = $user->ID;
+	global $wpdb;
+	$teamid = $wpdb->get_results("SELECT teamid FROM hs_staff WHERE ID='$id';", ARRAY_A);
+	if($wpdb->num_rows > 0) {
+		$teamid=get_the_title($teamid[0]['teamid']);
+	} else {
+		echo json_encode(array(
+			'msg'=>'[Error] Could not find team id associated with your account.'
+		));
+		die();
+	}
+*/
+	
+	$teamid = get_the_title(get_user_meta($user->ID, 'teamid', true));
+
+	echo json_encode(get_players(post_exists($teamid . ' - ' . $game)));
+	die();
+ }
+
+ add_action('wp_ajax_fetch_players', 'fetch_players');
+ add_action('wp_ajax_nopriv_fetch_players', 'fetch_players');
 
 ?>

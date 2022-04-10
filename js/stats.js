@@ -21,36 +21,36 @@ const DEFAULT_SORT = () => { //alphabetical sort to start
 
 $(document).ready(function() {
     var button = object('getstats');
-    button.onclick = () => {
-            var game=object('game').options[object('game').selectedIndex].text.toLowerCase();
-            var now = [game];
-            if(last!==now) {
-                $.ajax({
-                    type: "post",
-                    url: myAjax.ajaxurl,
-                    data: {action: 'getstats', 'game': game},
-                    dataType: 'json',
-                    success: function(response){
-                        nfo = response;
-                        last=now;
+    button.addEventListener('click', function(){
+        var game=object('game').options[object('game').selectedIndex].text.toLowerCase();
+        var now = [game];
+        if(last!==now) {
+            $.ajax({
+                type: "post",
+                url: myAjax.ajaxurl,
+                data: {action: 'getstats', 'game': game},
+                dataType: 'json',
+                success: function(response){
+                    nfo = response;
+                    last=now;
 
-                        console.log(JSON.stringify(nfo));
+                    console.log(JSON.stringify(nfo));
 
-                        if (!JSON.stringify(nfo).toLowerCase().includes('[error]')) {
-                            //DEFAULT_SORT();
-                            make_table();
-                        } else {
-                        }
-                    },
-        
-                    error: function(xhr, status, error) {
-                        alert('error');
-                        console.error(status, error);
+                    if (!JSON.stringify(nfo).toLowerCase().includes('[error]')) {
+                        //DEFAULT_SORT();
+                        make_table();
+                    } else {
                     }
-                });
-            } 
-        
-    }
+                },
+    
+                error: function(xhr, status, error) {
+                    alert('error');
+                    console.error(status, error);
+                }
+            });
+        } 
+    
+});
 
     var b = object('getstatsu');
     b.onclick = () => {
