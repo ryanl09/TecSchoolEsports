@@ -12,15 +12,18 @@ $(document).ready(function() {
             
         });
 
+        const player = new YT.Player('testimonialsvid');
     var span = document.getElementsByClassName("closeModal")[0];
     span.addEventListener('click', () => {
             modal.style.display = "none";
+            player.stopVideo();
             EVENT_ID = -1;
         });
 
     window.onclick = (event) => {
         if (event.target == modal) {
             modal.style.display = "none";
+            player.stopVideo();
             EVENT_ID = -1;
         }
     }

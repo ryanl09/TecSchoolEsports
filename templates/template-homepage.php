@@ -11,7 +11,7 @@ get_header(); ?>
 
 <script src="/htdocs/wp-content/plugins/tecschoolesports/js/alertify.js" type="text/javascript"></script>
 <link rel="stylesheet" href="/htdocs/wp-content/plugins/tecschoolesports/styles/homepage.css">
-
+<script type="text/javascript" src="https://www.youtube.com/player_api"></script>
 
 <div id="myModal" class="modal" style="display:none;">
         <div class="modal-content">
@@ -20,7 +20,7 @@ get_header(); ?>
                 <h2 id="mbheadertext">Highschool League Testimonials</h2>
             </div>
             <div class="modal-body" id="mbbodytext">
-				<iframe id="testimonialsvid" height="600" src="https://www.youtube.com/embed/wsQrsznOl7E" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+				<iframe id="testimonialsvid" height="600" src="https://www.youtube.com/embed/wsQrsznOl7E?enablejsapi=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
         </div>
     </div>

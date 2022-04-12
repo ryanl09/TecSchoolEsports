@@ -48,6 +48,7 @@ $(document).ready(function(){
         accsubmenu += subitem('accountsettings', ahref('https://tecschoolesports.com/settings', 'Settings'));
         accsubmenu += '</ul>';
         prof = item('menu-account',  ahref('https://tecschoolesports.com', 'Account')+accsubmenu);
+        prof += item('menu-logout',  ahref('https://tecschoolesports.com/logout', 'Log Out'));
     } else {
         prof = item('menu-signup', ahref('https://tecschoolesports.com/register', 'Sign up'));
         prof += item('menu-login', ahref('https://tecschoolesports.com/login', 'Log In'));
@@ -92,6 +93,7 @@ $(document).ready(function(){
         }
         mobmenu += msubitem('maccountsettings', mahref('https://tecschoolesports.com/settings', 'Settings'));
         mobmenu += '</ul>';
+        mobmenu += '<a class="mobmenuheader" href="https://tecschoolesports.com/logout">Log Out</a>';
     } else {  
         mobmenu += '<a class="mobmenuheader" href="https://tecschoolesports.com/register">Sign Up</a>';
         mobmenu += '<a class="mobmenuheader" href="https://tecschoolesports.com/login">Log In</a>';

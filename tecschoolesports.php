@@ -106,6 +106,20 @@ function tecinit() {
 		} else if ($post_title==='login') {
 			if($li) {
 				//need to get rid of this page if logged in
+				if (in_array('student', $user->roles)) {
+					wp_redirect('https://tecschoolesports.com');
+					return;
+				} 
+				if (in_array('team_manager', $user->roles)) {
+					wp_redirect('https://tecschoolesports.com/dashboard');
+				}
+			}
+		} else if ($post_title==='logout') {
+			if (is_user_logged_in()) {
+				wp_logout();
+				wp_redirect('https://tecschoolesports.com');
+			} else {
+				wp_redirect('https://tecschoolesports.com/login');
 			}
 		} else if ($post_title==='stats') {
 			wp_register_script('thestats', plugin_dir_url(__FILE__ ) . 'js/stats.js', array('jquery'));
@@ -2258,7 +2272,7 @@ function is_subteam($id) {
 	$game = sanitize_text_field($_POST['game']);
 
 	$user = wp_get_current_user();
-	if (!(in_array('tm', $user->roles) || in_array('administrator', $user->roles))) {
+	if (!(in_array('team_manager', $user->roles) || in_array('administrator', $user->roles))) {
 		echo json_encode(array(
 			'msg' => '[Error] Invalid permissions.'
 		));
