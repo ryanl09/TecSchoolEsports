@@ -7,7 +7,6 @@ function rcols() {
     var _t = document.getElementsByClassName('sp-template-player-statistics');
     for (var i = 0; i < _t.length; i++) {
         var t = _t[i].children[0];
-
         switch(t.innerHTML.toLowerCase()){
             case 'rocket league d1':
             case 'rocket league d2':

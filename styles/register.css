@@ -1,0 +1,124 @@
+body {
+    font-family: "Montserrat", sans-serif;
+}
+
+
+.textwrapper {
+    text-align: center;
+}
+
+.large-h {
+    font-size:54px;
+    font-weight:600;
+    margin-bottom:20px;
+}
+
+.lowtext {
+    opacity:.7;
+}
+
+.contentboxwrapper {
+    display:grid;
+    grid-template-columns: auto auto auto;
+    column-gap: 20px;
+}
+
+.contentbox {
+    border: #fff 2px solid;
+    border-radius: 4px;
+    width:100%;
+}
+
+.contentbox-img {
+    width:100px;
+    height:100px;
+    display:flex;
+    justify-content: center;
+    align-content: center;
+}
+
+.content-box-h {
+    text-align: center;
+}
+
+.content-box-body {
+    text-align: center;
+}
+
+.titlecont {
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.titlecont-img {
+    position: relative;
+    width:50px;
+    height:50px;
+    margin:5px;
+    float:left;
+}
+
+.titlecont-h {
+    float:left;
+    margin-left:10px;
+    align-self: flex-end;
+}
+
+.mtop-50 {
+    margin-top:50px;
+}
+
+.contentboxwrapper-4 {
+    display:grid;
+    grid-template-columns: auto auto auto auto;
+    column-gap: 20px;
+}
+
+.tecbg {
+    width:200%;
+    height:300%;
+    position:absolute;
+    left:-59%;
+    top:-78%;
+    z-index: -1;
+    background-image:url('https://tecschoolesports.com/htdocs/wp-content/plugins/tecschoolesports/images/tec-dark-margin.png');
+    background-size:300px 133px;
+    background-repeat: repeat;
+    transform: rotate(-30deg);
+    opacity: .05;
+}
+
+hr.underline {
+    border: #fff 1px solid;
+    width:10%;
+    margin-bottom:46px;
+}
+
+.gamecard {
+
+}
+
+@media screen and (max-width:1024px) {
+    .contentboxwrapper {
+        grid-template-columns: auto;
+    }
+
+    .contentboxwrapper-4 {
+        grid-template-columns: auto;
+    }
+
+    .contentboxwrapper-2 {
+        grid-template-columns: auto;
+    }
+}
+
+.contentboxwrapper-2 {
+    display:grid;
+    grid-template-columns: auto auto;
+    column-gap: 20px;
+}
+
+.regbox {
+    text-align:center;
+}

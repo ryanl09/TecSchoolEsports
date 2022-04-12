@@ -11,7 +11,7 @@ get_header(); ?>
 <script src="/htdocs/wp-content/plugins/tecschoolesports/js/alertify.js" type="text/javascript"></script>
 <link rel="stylesheet" href="/htdocs/wp-content/plugins/tecschoolesports/styles/spteam.css">
 
-	<h1 class="entry-title"><?php echo get_the_title(); ?></h1>
+	<h1 class="entry-title"><?php if (!is_subteam(get_the_ID())) {echo get_the_title();} ?></h1>
 
 	<div id="primary" class="content-area content-area-full-width">
 		<main id="main" class="site-main" role="main">
@@ -104,7 +104,19 @@ get_header(); ?>
 						</div>
 					</div>*/
 
-                }
+                } else {
+					
+
+					while ( have_posts() ) : the_post();
+
+				if ( in_array( get_post_type(), array( 'sp_player', 'sp_staff', 'sp_team' ) ) ) {
+					get_template_part( 'content', 'nothumb' );
+				} else {
+					get_template_part( 'content', 'page' );
+				}
+
+						endwhile;
+				}
             ?>
 
 		</main><!-- #main -->

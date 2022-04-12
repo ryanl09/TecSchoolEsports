@@ -7,6 +7,7 @@ let selected_players = [];
 let EVENT_ID=-1;
 
 const players_cache=[];
+const players_total=[];
 
 const titles = [];
 
@@ -28,7 +29,7 @@ $(document).ready(function() {
     <button id="subtheroster" onclick="updateroster(0);" class="hollowbtn">Submit Now</button> */
 
 
-    obj('upcomingmatches').onclick = function() {
+    obj('upcomingmatches').addEventListener('click', function() {
         if(um){
             obj('upcomingmatches').innerHTML = 'Upcoming Matches ⯆';
             $('#upcomingmatchesinfo').slideUp();
@@ -42,9 +43,9 @@ $(document).ready(function() {
             $('#upcomingmatchesinfo').slideDown();
         }
         um=!um;
-    }
+    });
 
-    obj('pastmatches').onclick = function() {
+    obj('pastmatches').addEventListener('click', function() {
         if (pm) {
             obj('pastmatches').innerHTML = 'Past Matches ⯆';
             $('#pastmatchesinfo').slideUp();
@@ -58,15 +59,15 @@ $(document).ready(function() {
             $('#pastmatchesinfo').slideDown();
         }
         pm=!pm;
-    }
+    });
 
     const modal = document.getElementById("myModal");
 
     var span = document.getElementsByClassName("closeModal")[0];
-    span.onclick = function() {
+    span.addEventListener('click', function() {
         modal.style.display = "none";
         EVENT_ID=-1;
-      }
+      });
 
     window.onclick = function(event) {
         if (event.target == modal) {
@@ -81,6 +82,59 @@ $(document).ready(function() {
     if (ACTIVE_BOX > inf.events.length) {
         ACTIVE_BOX = 0;
     }
+
+    obj('playersearch').addEventListener('change', function() {
+        //add suggestions, (5?)
+    });
+
+    obj('addplayer').addEventListener('click', function() {
+        //add post meta to player
+
+        let pl = '';
+        const text = obj('playersearch').value.toLowerCase().trim();
+
+        for(let i = 0; i < players_total.length;i++) { 
+            if(players_total[i].name.toLowerCase().trim()===text){
+                pl=players_total[i];
+                break;
+            }
+        }
+
+        if (!pl){
+            Popup.show('[Error] Player not found.');
+            return;
+        }
+
+        let flag='';
+
+        verify:
+        for(let i = 0; i < players_cache.length; i++) { 
+            if(players_cache[i]===undefined) {
+                continue;
+            }
+            for(let j = 0; j < players_cache[i].length; j++) {
+
+                if(players_cache[i][j].name.toLowerCase().trim()===text){
+                    if(i===ACTIVE_BOX) {
+                        flag=`[Error] ${pl.name} is already on this team.`;
+                        break verify;
+                    }
+                }
+            }
+        }
+
+        if(flag) {
+            Popup.show(flag);
+        } else {
+            //add player
+            const row = create_player_row(pl.id, pl.name);
+            players_cache[ACTIVE_BOX].push(pl);
+            obj('playersbody').insertAdjacentElement('beforeend', row);
+            obj('playersearch').value='';
+            Popup.show(`[Success] ${pl.name} was added to ${titles[ACTIVE_BOX]}`);
+        }
+    });
+
     updatedashboard(ACTIVE_BOX);
 
 
@@ -257,21 +311,27 @@ function update_players_table(id) {
     var html='';
     const table = obj('playersbody');
     for (let i = 0; i < players_cache[id].length; i++) {
-        const pl_options = document.createElement('div');
-        pl_options.insertAdjacentElement('afterbegin', subtract(players_cache[id][i].id));
-
-        var td1 = document.createElement('td');
-        td1.innerText = players_cache[id][i].name;
-
-        var td2 = document.createElement('td');
-        td2.insertAdjacentElement('afterbegin', pl_options);
-
-        var row = document.createElement('tr');
-        row.insertAdjacentElement('afterbegin', td1);
-        row.insertAdjacentElement('beforeend', td2);
-        
+        const pl = players_cache[id][i];
+        const row = create_player_row(pl.id, pl.name);
         table.insertAdjacentElement('afterbegin', row);
     }
+}
+
+let create_player_row = (id,plname) => {
+    const pl_options = document.createElement('div');
+    pl_options.insertAdjacentElement('afterbegin', subtract(id));
+
+    var td1 = document.createElement('td');
+    td1.innerText = plname;
+
+    var td2 = document.createElement('td');
+    td2.insertAdjacentElement('afterbegin', pl_options);
+
+    var row = document.createElement('tr');
+    row.id=`plrow-${id}`;
+    row.insertAdjacentElement('afterbegin', td1);
+    row.insertAdjacentElement('beforeend', td2);
+    return row;
 }
 
 let subtract = (id) => {
@@ -279,7 +339,18 @@ let subtract = (id) => {
     s.innerText = '➖';
     s.classList.add('ploption');
     s.addEventListener('click', function() {
-        alert(id);
+        if (obj(`plrow-${id}`)) {
+            obj(`plrow-${id}`).remove();
+            for (let i = 0; i < players_cache[ACTIVE_BOX].length; i++) {
+                if(players_cache[ACTIVE_BOX][i].id===id) {
+
+                    players_cache[ACTIVE_BOX].splice(i, 1);
+                    break;
+                }
+            }
+        }
+        //remove with ajax
+        console.log(`Player [${id}] removed.`);
     });
     return s;
 }
@@ -293,6 +364,9 @@ function fetchPlayers(id) {
         data: {action: 'fetch_players', 'game':titles[id]},
         success:function(response) {
             players_cache[id] = response;
+            for (let i = 0; i < players_cache[id].length; i++) {
+                players_total.push(players_cache[id][i]);
+            }
             document.getElementById('playersloader').style.visibility='hidden';
             update_players_table(id);
         },

@@ -19,6 +19,8 @@ function tecschoolesports() {
 		wp_register_script('main', plugin_dir_url(__FILE__) . 'js/main.js');
 		$roles = wp_get_current_user()->roles;
 		$maxrole = '';
+		$pageid='';
+		$link='';
 		if (in_array('student', $roles)) {
 			$maxrole='student';
 		}
@@ -28,7 +30,10 @@ function tecschoolesports() {
 		if (in_array('administrator', $roles)) {
 			$maxrole='admin';
 		}
-		wp_localize_script('main', 'info', array('loggedin' => is_user_logged_in(), 'role' => $maxrole));
+		
+		$pageid = get_user_meta($user->ID, 'pageid', true);
+		$link = get_permalink($pageid);
+		wp_localize_script('main', 'info', array('loggedin' => is_user_logged_in(), 'role' => $maxrole, 'pageid' => $pageid, 'link'=>$link));
 		wp_enqueue_script('main');
 	}
 }
@@ -70,7 +75,10 @@ function tecinit() {
             wp_register_script('tecschedule', plugin_dir_url(__FILE__ ) . 'js/schedule.js', array('jquery'));
 			wp_localize_script('tecschedule', 'myAjax', array( 'ajaxurl' => admin_url($adm)));
 			wp_enqueue_script('tecschedule');
-        } else if ($post_title==='student registration') {
+        } else if ($post_title==='register') {
+            wp_register_script('register', plugin_dir_url(__FILE__ ) . 'js/register.js', array('jquery'));
+			wp_enqueue_script('register');
+		} else if ($post_title==='student registration') {
 			wp_register_script('registerstudent', plugin_dir_url(__FILE__ ) . 'js/registerstudent.js', array('jquery'));
 			$code = isset($_GET['schoolcode']) ? $_GET['schoolcode'] : '';
 			$sug = '';
@@ -545,16 +553,22 @@ add_action('wp_ajax_nopriv_getschedule', 'getschedule');
 function conv($info, $t) {
 	$ret = $info;
 	if($t==='g') {
-		if ($info==='knockoutcity') {
-			$ret='Knockout City';
+		if ($info==='knockoutcityd1') {
+			$ret='Knockout City D1';
+		} else if ($info==='knockoutcityd2') {
+			$ret='Knockout City D2';
 		} else if ($info==='rocketleagued1') {
 			$ret='Rocket League D1';
 		} else if ($info==='rocketleagued2') {
 			$ret='Rocket League D2';
-		} else if ($info==='overwatch') {
-			$ret='Overwatch';
-		} else if ($info==='valorant') {
-			$ret='Valorant';
+		} else if ($info==='overwatchd1') {
+			$ret='Overwatch D1';
+		} else if ($info==='overwatchd2') {
+			$ret='Overwatch D2';	
+		}else if ($info==='valorantd1') {
+			$ret='Valorant D1';
+		}else if ($info==='valorantd2') {
+			$ret='Valorant D2';
 		}
 	} else if ($t==='t') {
 

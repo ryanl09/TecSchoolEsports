@@ -35,7 +35,9 @@ $(document).ready(function(){
     var prof='';
     if (info.loggedin) {
         var accsubmenu = '<ul id="sub-menu-account" class="sub-menulist">';
-        accsubmenu += subitem('accountprofile', ahref('https://tecschoolesports.com', 'Profile'));
+        if (info.role==='student') {
+            accsubmenu += subitem('accountprofile', ahref(`${info.link}`, 'Profile'));
+        }
         if (info.role === 'tm' || info.role === 'admin') {
             accsubmenu += subitem('accountdashboard', ahref('https://tecschoolesports.com/tmdashboard', 'Dashboard'));
         }
@@ -78,7 +80,9 @@ $(document).ready(function(){
     if (info.loggedin) {
         mobmenu += `<a class="mobmenuheader" href="#" onclick="slide('mobaccount')">Account</a>`;
         mobmenu += '<ul id="mobaccountmenu" class="mobsubmenu">';
-        mobmenu += msubitem('maccountprofile', mahref('https://tecschoolesports.com', 'Profile'));
+        if (info.role==='student') {
+            mobmenu += msubitem('maccountprofile', mahref(`${info.link}`, 'Profile'));
+        }
         if (info.role === 'tm' || info.role === 'admin') {
             mobmenu += msubitem('maccountdashboard', mahref('https://tecschoolesports.com/tmdashboard', 'Dashboard'));
         }

@@ -91,12 +91,14 @@ if (!($user->ID && (in_array('team_manager', $user->roles) || in_array('administ
 
                 <h2>Players</h2>
                 <div class="playersheader">
-                    <h5 id="gametitle">{game}</h5>
+                    <div class="plleft">
+                        <h5 id="gametitle">{game}</h5>
+                    </div>
                     
+                    <div class="plright">
+                    <a id="addplayer" class="ploption">➕</a>
                     <input type="text" id="playersearch" class="dashboardsearch">
-                    <h2>
-                        <a id="addplayer" class="ploption">➕</a>
-                    </h2>
+                    </div>
                 </div>
                 
                 <div id="playerstable" class="gametablecontainer">
