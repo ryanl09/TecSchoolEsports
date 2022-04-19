@@ -35,6 +35,11 @@ function tecschoolesports() {
 		$link = get_permalink($pageid);
 		wp_localize_script('main', 'info', array('loggedin' => is_user_logged_in(), 'role' => $maxrole, 'pageid' => $pageid, 'link'=>$link));
 		wp_enqueue_script('main');
+
+		if ($maxrole==='tm' && show_renew_bar()) {
+			wp_register_script('renewbar', plugin_dir_url(__FILE__) . 'js/renewbar.js');
+			wp_enqueue_script('renewbar');
+		}
 	}
 }
 
@@ -182,6 +187,26 @@ function tecinit() {
 		}
     }
 }
+
+/**
+ * Function to show the bar for team managers to renew their account
+ */
+
+ function show_renew_bar() {
+	$uid=wp_get_current_user()->ID;
+	$teamid = get_post_meta($uid, 'teamid', true);
+	$teamid_2 = 0;
+	global $wpdb;
+	$res = $wpdb->get_results("SELECT teamid FROM `hs_staff` WHERE ID = '$uid';", ARRAY_A);
+	if ($wpdb->num_rows > 0) {
+		$teamid_2 = $res[0]['code'];
+	}
+
+	$teamid = $teamid ?? $teamid_2;
+
+	$res = $wpdb->get_results("SELECT * FROM `hs_renew` WHERE teamid = '$teamid';", ARRAY_A);
+	return $wpdb->num_rows < 1;
+ }
 
 //get schoolnames from title string ( i.e. 'A - RL D1 vs B - RL D1' => [0]='A', [1]='B' )
 
